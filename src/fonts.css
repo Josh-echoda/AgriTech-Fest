@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+body {
+  font-family: 'DM Sans', sans-serif;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--navy);
+}
+
+textarea {
+  resize: vertical;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #8a97a0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.brand-mark,
+.announcement,
+.nav-links button,
+.text-link,
+.ticket-button,
+.button,
+.arrow-link,
+.day-link,
+.ticket-apply,
+.programme-tabs button,
+.footer-col b,
+.footer-col button,
+.hero-footer,
+.eyebrow,
+.section-kicker,
+.heading-note,
+.card-number,
+.ticket-label,
+.day-top,
+.day-place,
+.image-tag,
+.speaker-meta span,
+.benefit span,
+.benefit strong,
+.funnel-step span,
+.funnel-step strong,
+.number-item span,
+.number-item strong,
+.promise-title,
+.speaker-text h3,
+.ticket-card strong,
+.footer-brand p {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.hero-footer {
+  margin-top: 56px;
+}
+
+.hero-buttons {
+  margin-bottom: 20px;
+}
