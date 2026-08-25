@@ -224,7 +224,6 @@ function HomePage() {
 
   return (
     <div className="site-shell">
-      <div className="announcement"><span>12–14 NOVEMBER 2026</span><span className="announcement-dot" /> KANO, NIGERIA <button onClick={() => navigate('/tickets')}>Secure your spot <ArrowUpRight size={14} /></button></div>
       <header className="nav-wrap">
         <nav className="nav container">
           <button className="logo-button" onClick={() => scrollTo('top')} aria-label="AgriTech Fest home"><Mark /></button>
@@ -243,7 +242,7 @@ function HomePage() {
           <div className="hero-overlay" />
           <div className="hero-grid" />
           <div className="container hero-content">
-            <div className="hero-copy"><p className="eyebrow light-eyebrow"><span /> KANO · NIGERIA · 12–14 NOVEMBER 2026</p><h1>Where Africa’s agricultural <em>future meets.</em></h1><p className="hero-description">The conference bringing Africa’s agritech ecosystem together to connect, collaborate, exchange ideas and celebrate the technologies and people transforming agriculture across the continent.</p><div className="hero-buttons"><button className="button button-lime" onClick={() => scrollTo('tickets')}>Secure your spot <ArrowUpRight size={17} /></button><button className="button button-outline" onClick={() => scrollTo('sponsor')}>Become a sponsor <ArrowUpRight size={17} /></button></div></div>
+            <div className="hero-copy"><p className="eyebrow light-eyebrow"><span /> KANO · NIGERIA · 12–14 NOVEMBER 2026</p><h1>Where the future Food <em>Begins.</em></h1><p className="hero-description">The conference bringing Africa’s agritech ecosystem together to connect, collaborate, exchange ideas and celebrate the technologies and people transforming agriculture across the continent.</p><div className="hero-buttons"><button className="button button-lime" onClick={() => scrollTo('tickets')}>Secure your spot <ArrowUpRight size={17} /></button><button className="button button-outline" onClick={() => scrollTo('sponsor')}>Become a sponsor <ArrowUpRight size={17} /></button></div></div>
             <div className="hero-footer"><span>3 days</span><i /> <span>3 experiences</span><i /> <span>one agricultural future</span><div className="hero-scroll"><CircleArrowUp size={18} /> scroll to explore</div></div>
           </div>
         </section>
