@@ -1,0 +1,208 @@
+.ticket-success-page {
+  min-height: calc(100vh - 92px);
+  padding: clamp(48px, 7vw, 92px) 0 110px;
+  background:
+    radial-gradient(circle at 82% 12%, rgba(188, 255, 38, 0.14), transparent 24rem),
+    linear-gradient(180deg, #f7f9f5 0%, #eef2ed 100%);
+}
+
+.ticket-delivery {
+  width: min(1080px, calc(100% - 32px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(390px, 0.9fr);
+  gap: clamp(48px, 8vw, 104px);
+  align-items: center;
+}
+
+.ticket-success-copy { max-width: 470px; }
+
+.ticket-success-kicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 20px;
+  color: #58721e;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.ticket-success-kicker span {
+  width: 28px;
+  height: 2px;
+  background: #9bd000;
+}
+
+.ticket-success-copy h1 {
+  margin: 0;
+  color: #07131f;
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 7vw, 6.8rem);
+  line-height: 0.88;
+  letter-spacing: -0.065em;
+}
+
+.ticket-success-copy > p:not(.ticket-success-kicker) {
+  margin: 28px 0 0;
+  color: #4f5b62;
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.ticket-success-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 34px;
+}
+
+.ticket-success-actions button {
+  min-height: 48px;
+  padding: 0 19px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.ticket-success-actions button:hover { transform: translateY(-2px); }
+.ticket-success-actions button:focus-visible { outline: 3px solid rgba(130, 177, 0, 0.38); outline-offset: 3px; }
+.ticket-action-primary { border: 1px solid #07131f; background: #07131f; color: #fff; box-shadow: 0 12px 24px rgba(7, 19, 31, 0.16); }
+.ticket-action-primary:hover { background: #172a39; box-shadow: 0 15px 30px rgba(7, 19, 31, 0.22); }
+.ticket-action-secondary { border: 1px solid #cbd3cb; background: rgba(255, 255, 255, 0.68); color: #07131f; }
+.ticket-action-secondary:hover { background: #fff; }
+
+.event-pass {
+  position: relative;
+  min-height: 690px;
+  overflow: hidden;
+  padding: 32px clamp(24px, 5vw, 40px) 28px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 5% 0%, rgba(187, 255, 39, 0.17), transparent 20rem),
+    #030706;
+  color: #fff;
+  box-shadow: 0 40px 80px rgba(7, 19, 31, 0.25), 0 3px 8px rgba(7, 19, 31, 0.12);
+}
+
+.event-pass::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+}
+
+.event-pass-notch {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  width: 76px;
+  height: 46px;
+  border-radius: 0 0 46px 46px;
+  transform: translateX(-50%);
+  background: #f2f5f0;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.18);
+}
+
+.event-pass-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.event-pass-header img { width: 92px; height: 64px; object-fit: contain; object-position: left top; }
+.event-pass-date { text-align: right; padding-top: 5px; }
+.event-pass-date span,
+.event-pass-field span,
+.event-pass-attendee span,
+.event-pass-footer span {
+  display: block;
+  color: #919a94;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+.event-pass-date strong { display: block; margin-top: 2px; font-size: 0.95rem; letter-spacing: 0.06em; text-transform: uppercase; }
+
+.event-pass-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 20px;
+  margin-top: 28px;
+}
+.event-pass-field-wide { grid-column: 1 / -1; }
+.event-pass-field strong { display: block; margin-top: 4px; font-family: var(--font-display); font-size: 1.07rem; line-height: 1.25; }
+.event-pass-field-wide strong { font-size: clamp(1.45rem, 4vw, 2rem); letter-spacing: -0.035em; }
+
+.event-pass-attendee {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px dashed rgba(255,255,255,0.2);
+}
+.event-pass-attendee strong { display: block; margin-top: 4px; font-size: 1.05rem; }
+.event-pass-attendee small { display: block; margin-top: 2px; color: #aab3ad; font-size: 0.78rem; overflow-wrap: anywhere; }
+
+.event-pass-qr {
+  width: fit-content;
+  margin: 28px auto 22px;
+  padding: 12px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 0 0 5px rgba(255,255,255,0.08);
+}
+.event-pass-qr svg { display: block; width: min(46vw, 220px); height: auto; }
+
+.event-pass-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+.event-pass-footer code { display: block; margin-top: 3px; color: #dce3dd; font-family: inherit; font-size: 0.78rem; overflow-wrap: anywhere; }
+.event-pass-footer p { display: flex; align-items: center; gap: 7px; margin: 0; color: #c3d69b; font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
+.event-pass-footer i { width: 7px; height: 7px; border-radius: 50%; background: #baff27; box-shadow: 0 0 0 4px rgba(186,255,39,0.12); }
+
+@media (max-width: 860px) {
+  .ticket-delivery { grid-template-columns: 1fr; max-width: 570px; }
+  .ticket-success-copy { max-width: 540px; }
+  .event-pass-notch { background: #eef2ed; }
+}
+
+@media (max-width: 520px) {
+  .ticket-success-page { padding: 36px 0 72px; }
+  .ticket-delivery { width: min(100% - 20px, 570px); gap: 36px; }
+  .ticket-success-copy h1 { font-size: clamp(3.25rem, 18vw, 5rem); }
+  .ticket-success-actions { flex-direction: column; }
+  .ticket-success-actions button { width: 100%; }
+  .event-pass { min-height: 650px; padding: 28px 22px 24px; border-radius: 24px; }
+  .event-pass-header img { width: 78px; height: 56px; }
+  .event-pass-details { gap: 21px 14px; }
+  .event-pass-field-wide strong { font-size: 1.45rem; }
+  .event-pass-qr svg { width: min(58vw, 210px); }
+  .event-pass-footer { align-items: flex-start; flex-direction: column; gap: 12px; }
+}
+
+@media print {
+  body { background: #fff !important; }
+  .site-nav-shell,
+  .ticket-success-copy,
+  .footer { display: none !important; }
+  .ticket-success-page { min-height: 0; padding: 0; background: #fff; }
+  .ticket-delivery { display: block; width: 100%; margin: 0; }
+  .event-pass { width: 440px; min-height: 650px; margin: 0 auto; box-shadow: none; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .event-pass-notch { background: #fff; }
+}

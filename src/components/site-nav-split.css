@@ -1,0 +1,20 @@
+@media(min-width:821px){
+  .floating-header{height:88px;padding:14px clamp(24px,4vw,64px);background:transparent}
+  .floating-nav{width:100%;max-width:none;height:60px;margin:0;padding:0;grid-template-columns:minmax(120px,1fr) auto minmax(120px,1fr);gap:30px;border:0;border-radius:0;background:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+  .floating-header.is-scrolled{padding-top:10px;background:rgba(247,249,245,.9);box-shadow:0 1px 0 rgba(10,26,47,.08);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+  .floating-header.is-scrolled .floating-nav{border:0;background:transparent;box-shadow:none;transform:none}
+  .floating-logo{justify-self:start;height:58px;padding:0;border-radius:0}
+  .floating-logo .brand-logo{width:58px;height:58px}
+  .floating-links{justify-self:center;height:48px;padding:5px 7px;gap:1px;border:1px solid rgba(10,26,47,.08);border-radius:999px;background:rgba(255,255,255,.94);box-shadow:0 8px 25px rgba(10,26,47,.08);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+  .floating-links button{min-height:36px;padding-inline:clamp(9px,1.1vw,16px)}
+  .floating-actions{justify-self:end}
+  .floating-cta{min-width:104px;min-height:42px;padding-inline:18px}
+}
+
+@media(min-width:821px) and (max-width:1080px){
+  .floating-header{padding-inline:24px}
+  .floating-nav{grid-template-columns:90px auto 90px;gap:14px}
+  .floating-links{padding-inline:5px}
+  .floating-links button{padding-inline:7px;font-size:11px}
+  .floating-cta{min-width:90px;padding-inline:13px;font-size:10px}
+}
