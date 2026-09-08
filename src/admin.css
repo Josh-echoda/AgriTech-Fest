@@ -3,3 +3,24 @@
 @media(max-width:1050px){.admin-stats{grid-template-columns:repeat(2,1fr)}.admin-overview-grid,.admin-overview-grid.lower{grid-template-columns:1fr}.admin-row{grid-template-columns:42px minmax(180px,1fr) 110px 72px}.admin-row time,.admin-row small{display:none}}
 @media(max-width:760px){.admin-sidebar{transform:translateX(-100%);transition:transform .25s;width:270px}.admin-sidebar.open{transform:none;box-shadow:20px 0 50px rgba(0,0,0,.25)}.admin-brand button,.admin-menu{display:block}.admin-main{margin-left:0}.admin-topbar{padding:0 16px}.admin-search{display:none}.admin-menu{margin-right:auto}.admin-icon-button{margin-left:0}.admin-view{font-size:0;padding:10px}.admin-content{padding:24px 16px}.admin-heading{align-items:flex-start;gap:18px}.admin-heading>div>span{max-width:330px}.admin-stats{grid-template-columns:1fr 1fr}.settings-grid{grid-template-columns:1fr}.admin-row{grid-template-columns:38px 1fr 80px}.admin-row .admin-status{display:none}.row-actions{justify-content:flex-end}.chart-wrap{height:170px}}
 @media(max-width:480px){.admin-stats{grid-template-columns:1fr}.admin-heading{display:block}.admin-heading>.admin-primary{margin-top:18px}.admin-stats button{padding:16px}.admin-card{padding:18px}.admin-row{padding:13px;gap:9px}.field-pair{grid-template-columns:1fr}.revenue-split{display:block}.revenue-split span{margin-top:10px}}
+
+/* Keep every navigation item reachable on short screens and at browser zoom. */
+.admin-sidebar {
+  height: 100vh;
+  height: 100dvh;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #607b8b var(--admin-navy);
+}
+.admin-sidebar > * { flex-shrink: 0; }
+.admin-sidebar .admin-brand { height: auto; min-height: 50px; }
+.admin-sidebar nav { padding-bottom: 20px; }
+.admin-sidebar nav button { flex-shrink: 0; }
+.admin-sidebar .admin-user { min-height: 54px; }
+.admin-sidebar .admin-user span { min-width: 0; overflow-wrap: anywhere; }
+.admin-sidebar::-webkit-scrollbar { width: 6px; }
+.admin-sidebar::-webkit-scrollbar-thumb { background: #607b8b; border-radius: 6px; }
+.admin-sidebar::-webkit-scrollbar-track { background: var(--admin-navy); }
