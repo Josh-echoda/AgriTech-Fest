@@ -12,6 +12,7 @@ import { supabase } from './lib/supabase';
 import { addAdminRecord, deleteAdminRecord, loadAdminSection, updateAdminRecordStatus, type AdminSectionKey } from './lib/api';
 import CheckInPanel from './admin/CheckInPanel';
 import TeamPanel from './admin/TeamPanel';
+import SiteMaintenanceControl from './components/SiteMaintenanceControl';
 
 type AdminSection = 'overview' | 'pages' | 'programme' | 'speakers' | 'exhibitors' | 'partners' | 'tickets' | 'checkin' | 'battlefield' | 'inbox' | 'newsletter' | 'team' | 'settings';
 type RecordRow = { id: string; title: string; subtitle: string; meta: string; status: 'Published' | 'Draft' | 'Pending' | 'Approved'; tag?: string };
@@ -163,7 +164,7 @@ function AdminDashboard({ session, profile }: { session: Session; profile: Acces
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [modal, setModal] = useState(false);
   const [toast, setToast] = useState('');
-  const [published, setPublished] = useState(true);
+
   const isAdmin = profile.role === 'admin';
   const canAccess = (item: AdminSection) => isAdmin || item === 'overview' || (item === 'checkin' ? profile.permissions.includes('tickets') : profile.permissions.includes(item));
   const visibleNav = nav.filter((item) => canAccess(item.section));
@@ -226,7 +227,7 @@ function AdminDashboard({ session, profile }: { session: Session; profile: Acces
           {section === 'overview' && <Overview onNavigate={go} />}
           {section === 'checkin' && <CheckInPanel />}
           {section === 'team' && <TeamPanel />}
-          {section === 'settings' && <SettingsPanel published={published} setPublished={setPublished} notify={setToast} />}
+          {section === 'settings' && <SettingsPanel notify={setToast} />}
           {!['overview','settings','checkin','team'].includes(section) && <DataPanel section={section} rows={filtered} remove={remove} update={async (id, status) => { try { await updateAdminRecordStatus(section as AdminSectionKey, id, status); setRows((current) => ({ ...current, [section]: current[section as AdminSectionKey].map((row: RecordRow) => row.id === id ? { ...row, status } : row) })); setToast(`Status changed to ${status}`); } catch (error) { setToast(`Could not update status: ${(error as Error).message}`); } }} />}
         </div>
       </main>
@@ -273,8 +274,8 @@ function DataPanel({ section, rows, remove, update }: { section: AdminSection; r
   return <section className="admin-card admin-table"><header><div><span>{rows.length} RECORDS</span><h2>{titles[section][0]}</h2></div><button className="filter-button"><Gauge size={16} /> Filter</button></header>{rows.length === 0 ? <div className="admin-empty"><Search size={28} /><h3>No results found</h3><p>Try another search term.</p></div> : rows.map((row) => <article className="admin-row" key={row.id}><div className="row-avatar">{row.title.slice(0, 2).toUpperCase()}</div><div className="row-copy"><strong>{row.title}</strong><span>{row.subtitle}</span></div>{row.tag && <time>{row.tag}</time>}<small>{row.meta}</small><Status value={row.status} /><div className="row-actions"><button title="Edit" onClick={() => update(row.id, row.status === 'Published' || row.status === 'Approved' ? 'Draft' : section === 'pages' || section === 'programme' || section === 'speakers' || section === 'newsletter' ? 'Published' : 'Approved')}><Pencil size={16} /></button><button title="Delete" onClick={() => remove(row.id)}><Trash2 size={16} /></button></div></article>)}</section>;
 }
 
-function SettingsPanel({ published, setPublished, notify }: { published: boolean; setPublished: (value: boolean) => void; notify: (message: string) => void }) {
-  return <div className="settings-grid"><section className="admin-card settings-form"><header><div><span>EVENT INFORMATION</span><h2>Core details</h2></div></header><label>Event name<input defaultValue="AgriTech Fest 2026" /></label><div className="field-pair"><label>Start date<input type="date" defaultValue="2026-11-12" /></label><label>End date<input type="date" defaultValue="2026-11-14" /></label></div><label>Location<input defaultValue="Kano, Nigeria" /></label><label>Contact email<input type="email" defaultValue="info@e360.africa" /></label><button className="admin-primary" onClick={() => notify('Event settings saved')}>Save changes</button></section><section><article className="admin-card publish-card"><header><div><span>WEBSITE STATUS</span><h2>{published ? 'Live and visible' : 'Maintenance mode'}</h2></div><i className={published ? 'live' : ''} /></header><p>{published ? 'Visitors can access the public website.' : 'Only administrators can access the website.'}</p><button onClick={() => { setPublished(!published); notify(published ? 'Maintenance mode enabled' : 'Website is live'); }}>{published ? 'Enable maintenance mode' : 'Publish website'}</button></article><article className="admin-card settings-mini"><span>REGISTRATION CAPACITY</span><strong>2,148 <small>/ 3,000</small></strong><div className="progress-track"><i style={{ width: '71.6%' }} /></div><p>852 passes remaining</p></article></section></div>;
+function SettingsPanel({ notify }: { notify: (message: string) => void }) {
+  return <div className="settings-grid"><section className="admin-card settings-form"><header><div><span>EVENT INFORMATION</span><h2>Core details</h2></div></header><label>Event name<input defaultValue="AgriTech Fest 2026" /></label><div className="field-pair"><label>Start date<input type="date" defaultValue="2026-11-12" /></label><label>End date<input type="date" defaultValue="2026-11-14" /></label></div><label>Location<input defaultValue="Kano, Nigeria" /></label><label>Contact email<input type="email" defaultValue="info@e360.africa" /></label><button className="admin-primary" onClick={() => notify('Event settings saved')}>Save changes</button></section><section><SiteMaintenanceControl /><article className="admin-card settings-mini"><span>REGISTRATION CAPACITY</span><strong>2,148 <small>/ 3,000</small></strong><div className="progress-track"><i style={{ width: '71.6%' }} /></div><p>852 passes remaining</p></article></section></div>;
 }
 
 
