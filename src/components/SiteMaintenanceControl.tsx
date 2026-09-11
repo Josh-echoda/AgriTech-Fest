@@ -20,6 +20,7 @@ export default function SiteMaintenanceControl() {
   }
   return <article className="admin-card publish-card">
     <header><div><span>WEBSITE STATUS</span><h2>Site Maintenance</h2></div><i className={live ? 'live' : ''} /></header>
+    {import.meta.env.DEV && <p>Local preview bypasses maintenance automatically. This switch still changes the hosted site. Previewing locally does not require changing it.</p>}
     <p aria-live="polite">{live === null ? 'Loading saved site status…' : live ? 'Maintenance is OFF. Visitors can access the website.' : 'Maintenance is ON. Visitors see the branded maintenance page. Admin sign-in remains available.'}</p>
     <button type="button" role="switch" aria-label="Site Maintenance" aria-checked={live === false} disabled={live === null || busy} onClick={() => void toggle()}>{busy ? 'Saving…' : live === null ? 'Checking status…' : live ? 'Turn maintenance ON' : 'Turn maintenance OFF'}</button>
     {error && <div role="alert"><p>{error}</p>{live === null && <button type="button" onClick={() => void load()}>Retry</button>}</div>}

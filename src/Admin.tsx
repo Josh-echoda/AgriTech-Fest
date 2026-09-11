@@ -62,8 +62,8 @@ const initialRows: Record<Exclude<AdminSection, 'overview' | 'settings' | 'check
     { id: 'r3', title: 'Kano State', subtitle: 'Supporting Partner', meta: 'Agreement in review', status: 'Pending' },
   ],
   tickets: [
-    { id: 't1', title: 'Aisha Mohammed', subtitle: 'Student pass · ATF-Q2-18KLA', meta: 'aisha@example.com · 2 Sep 2026', status: 'Approved' },
-    { id: 't2', title: 'David Okoro', subtitle: 'Corporate pass · ATF-Y7-92MPD', meta: 'david@example.com · 2 Sep 2026', status: 'Approved' },
+    { id: 't1', title: 'Aisha Mohammed', subtitle: 'Regular pass · ATF-Q2-18KLA', meta: 'aisha@example.com · 2 Sep 2026', status: 'Approved' },
+    { id: 't2', title: 'David Okoro', subtitle: 'Premium pass · ATF-Y7-92MPD', meta: 'david@example.com · 2 Sep 2026', status: 'Approved' },
     { id: 't3', title: 'Zainab Musa', subtitle: 'Regular pass · ATF-L4-5AQNX', meta: 'zainab@example.com · 1 Sep 2026', status: 'Pending' },
   ],
   battlefield: [

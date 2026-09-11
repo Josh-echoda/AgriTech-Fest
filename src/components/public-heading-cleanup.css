@@ -1,0 +1,7 @@
+/* Remove decorative micro-headings from the public site. */
+.site-shell .eyebrow,
+.site-shell .section-kicker {
+  display: none;
+}
+/* Let the day cards end naturally after their action links. */
+.days-grid .day-card { min-height: 0; padding-bottom: 22px; }

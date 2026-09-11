@@ -1,0 +1,16 @@
+/* Supplied logos in the original muted, scrolling presentation. */
+.partner-strip .partner-inner{height:auto;padding-top:20px;padding-bottom:20px;display:block}
+.partner-strip .supported{display:flex;align-items:center;gap:24px;overflow:hidden;margin-top:0;width:100%}
+.partner-strip .supported>span{flex-shrink:0}
+.supporter-marquee{min-width:0;flex:1;overflow:hidden;padding:5px 0;mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)}
+.supporter-track{display:flex;width:max-content;animation:supporter-scroll 32s linear infinite}
+.supporter-logos{display:flex;align-items:center;gap:10px;list-style:none;padding:0 10px 0 0;margin:0;flex-shrink:0}
+.supporter-logos li{display:flex;align-items:center;justify-content:center;flex:0 0 108px;width:108px;height:56px;padding:7px 5px;background:transparent;border:0;border-radius:0;filter:none;opacity:1;transition:transform .2s}
+.supporter-logos img{display:block;width:100%;height:100%;object-fit:contain}
+.supporter-logos li:hover,.supporter-logos li:focus-visible{transform:scale(1.04)}
+.supporter-logos li:focus-visible{outline:2px solid #3b8247;outline-offset:2px}
+.supporter-marquee:hover .supporter-track,.supporter-marquee:focus-within .supporter-track{animation-play-state:paused}
+.partners-marquee.partners-marquee{height:auto;display:flex;align-items:center;gap:24px;padding:20px 24px;overflow:hidden}
+@keyframes supporter-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(max-width:600px){.partner-strip .supported{display:block}.supporter-marquee{margin-top:12px}.supporter-logos{gap:8px;padding-right:8px}.supporter-logos li{flex-basis:92px;width:92px;height:48px}.partners-marquee.partners-marquee{display:block}}
+@media(prefers-reduced-motion:reduce){.supporter-marquee{overflow-x:auto;mask-image:none;-webkit-mask-image:none}.supporter-track{animation:none}.supporter-logos[aria-hidden="true"]{display:none}.supporter-logos li{transition:none}}
