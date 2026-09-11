@@ -4,6 +4,8 @@ import './components/home-mixer.css';
 import './components/hero-refinement.css';
 import './components/public-heading-cleanup.css';
 import './components/supporter-logos.css';
+import './components/speaker-reveal.css';
+import './components/newsletter-page.css';
 import MaintenancePage from './components/MaintenancePage';
 import { useSiteLive } from './lib/useSiteLive';
 import SiteNav from './components/SiteNav';
@@ -29,7 +31,6 @@ const heroImages = [
   'https://images.pexels.com/photos/29571175/pexels-photo-29571175.jpeg?auto=compress&cs=tinysrgb&w=1920',
 ];
 const farmerImage = 'https://images.pexels.com/photos/34182310/pexels-photo-34182310.jpeg?auto=compress&cs=tinysrgb&h=650&w=940';
-const eventImage = 'https://images.pexels.com/photos/8730858/pexels-photo-8730858.jpeg?auto=compress&cs=tinysrgb&h=650&w=940';
 
 const supporterLogos = [
   { name: 'e360 Technologies Ltd', src: '/assets/partners/e360.png' },
@@ -215,7 +216,6 @@ function CountUpStat({ value, suffix = '', label }: { value: number; suffix?: st
 function HomePage() {
   const [faqOpen, setFaqOpen] = useState<number | null>(0);
   const [heroSlide, setHeroSlide] = useState(0);
-  const [selectedHomeSpeaker, setSelectedHomeSpeaker] = useState<(typeof speakers)[number] | null>(null);
 
   useEffect(() => {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -268,7 +268,7 @@ function HomePage() {
 
         <section className="exhibit section" id="exhibit"><div className="container exhibit-card"><div className="exhibit-image" style={{ backgroundImage: `url(${farmerImage})` }}><div className="image-tag"><Sprout size={16} /> In the field</div></div><div className="exhibit-copy"><p className="eyebrow"><span /> Exhibition</p><h2>Don’t just tell us what you’re building.<br /><em>Show us.</em></h2><p>Put your technology, products and solutions directly in front of farmers, founders, students, institutions, investors and policymakers.</p><div className="category-list">{['AgriTech', 'Machinery', 'Seeds', 'Inputs', 'Processing', 'Drones', 'Finance', 'Software', 'Research'].map(item => <span key={item}>{item}</span>)}</div><button className="button button-dark" onClick={() => navigate('/exhibit')}>Enquire to exhibit</button></div></div></section>
 
-        <section className="home-speakers section" id="speakers"><div className="container"><div className="section-heading-row"><div><p className="eyebrow"><span /> People to watch</p><h2>Meet the people shaping <em>what comes next.</em></h2></div><button className="arrow-link desktop-only" onClick={() => navigate('/speakers')}>View all speakers</button></div><div className="home-speaker-rail">{speakers.slice(0, 4).map((speaker, index) => <article className="home-speaker-card" key={speaker.name} tabIndex={0}><div className="home-speaker-photo" style={{ backgroundImage: `url(${eventImage})` }}><span>0{index + 1}</span>{speaker.keynote && <b>Keynote</b>}</div><div className="home-speaker-summary"><small>{speaker.title}</small><h3>{speaker.name}</h3><p>{speaker.org}</p><div className="home-speaker-reveal"><p>{speaker.bio}</p><button type="button" onClick={() => setSelectedHomeSpeaker(speaker)}>View bio</button></div></div></article>)}</div></div></section>
+        <section className="speaker-reveal section" id="speakers"><div className="container"><div className="speaker-reveal-heading"><div><h2>The voices shaping what comes next are <em>almost here.</em></h2><p>Builders, thinkers and decision-makers from across Africa's agricultural ecosystem will take the stage. We're keeping the names under wraps for now.</p></div><button className="button button-lime" onClick={() => navigate('/speakers')}>Guess the speakers</button></div><div className="speaker-reveal-grid">{speakerRevealSlots.slice(0, 4).map((slot, index) => <MysterySpeakerCard key={slot.clue} slot={slot} index={index} />)}</div></div></section>
 
         <section className="sponsor section" id="sponsor"><div className="container sponsor-grid"><div><p className="eyebrow light-eyebrow"><span /> Partnerships</p><h2>Put your brand where agriculture meets <em>innovation.</em></h2><button className="button button-lime" onClick={() => navigate('/sponsor')}>Become a sponsor</button></div><div className="benefit-list">{[['NETWORK', 'Meet the ecosystem.'], ['GENERATE LEADS', 'Meet tomorrow’s customers and partners.'], ['INNOVATE', 'Get closer to what’s next.'], ['GAIN EXPOSURE', 'Be visible to the people who matter.']].map(([title, text], i) => <div className="benefit" key={title}><span>0{i + 1}</span><div><strong>{title}</strong><p>{text}</p></div><ArrowUpRight size={18} /></div>)}</div></div></section>
 
@@ -300,7 +300,6 @@ function HomePage() {
         <section className="faq section container"><div><p className="eyebrow"><span /> Good to know</p><h2>Frequently<br /><em>asked.</em></h2><button className="arrow-link" onClick={() => navigate('/faq')}>Contact the team</button></div><div className="faq-list">{faqItems.slice(0, 5).map(([question, answer], i) => <div className={`faq-item ${faqOpen === i ? 'open' : ''}`} key={question}><button onClick={() => setFaqOpen(faqOpen === i ? null : i)}><span>0{i + 1}</span><strong>{question}</strong></button>{faqOpen === i && <p>{answer}</p>}</div>)}</div></section>
       </main>
 
-      <SpeakerBioDialog speaker={selectedHomeSpeaker} onClose={() => setSelectedHomeSpeaker(null)} />
 
       <footer className="footer"><div className="container footer-grid"><div className="footer-brand"><Mark light /><p>Where the future of<br />Food begins.</p><span>© 2026 e360 Africa — Efficience 360 Technologies Ltd.</span></div><div className="footer-col"><b>Explore</b><button onClick={() => scrollTo('about')}>About</button><button onClick={() => scrollTo('programme')}>Programme</button><button onClick={() => scrollTo('speakers')}>Speakers</button><button onClick={() => scrollTo('battlefield')}>Battlefield</button></div><div className="footer-col"><b>Get involved</b><button onClick={() => scrollTo('tickets')}>Tickets</button><button onClick={() => scrollTo('sponsor')}>Sponsor</button><button onClick={() => scrollTo('exhibit')}>Exhibit</button><button onClick={() => navigate('/media')}>Media pass</button></div><div className="footer-col"><b>Connect</b><button onClick={() => navigate('/newsletter')}>Newsletter</button><button onClick={() => navigate('/contact')}>Contact</button><a href="https://www.instagram.com/agritechfest_/" target="_blank" rel="noreferrer">Instagram: @Agritechfest_</a><a href="https://www.facebook.com/Agritechfest" target="_blank" rel="noreferrer">Facebook: Agritechfest</a></div></div><div className="container footer-bottom"><span><button onClick={() => navigate('/privacy')}>Privacy</button> · <button onClick={() => navigate('/terms')}>Terms</button></span><span>Made for the people building tomorrow.</span><button onClick={() => scrollTo('top')}>Back to top</button></div></footer>
     </div>
@@ -459,26 +458,19 @@ function BattlefieldPage() {
   );
 }
 
-const speakers = [
-  { name: 'Dr. Amina Bello', title: 'Keynote', org: 'Federal Ministry of Agriculture', bio: 'Policy and delivery across food systems.', category: 'government', keynote: true },
-  { name: 'Musa Ibrahim', title: 'Founder', org: 'FarmSense Africa', bio: 'Building field tools for smallholders.', category: 'founders', keynote: true },
-  { name: 'Fatima Yusuf', title: 'Investor', org: 'AgriVentures', bio: 'Backing climate-smart agri-tech.', category: 'investors', keynote: true },
-  { name: 'Prof. Tunde Adeyemi', title: 'Research Lead', org: 'BUK', bio: 'Agronomy, precision systems and farmer trials.', category: 'researchers', keynote: false },
-  { name: 'Nkechi Okafor', title: 'Founder', org: 'ColdChain Labs', bio: 'Post-harvest logistics and market access.', category: 'founders', keynote: false },
-  { name: 'Engr. Saleh Garba', title: 'Government Speaker', org: 'Kano State', bio: 'Mechanisation, infrastructure and scale.', category: 'government', keynote: false },
+const speakerRevealSlots = [
+  { clue: 'A voice changing how Africa grows', field: 'The field' },
+  { clue: 'A founder building beyond the obvious', field: 'Innovation' },
+  { clue: 'A decision-maker moving capital', field: 'Investment' },
+  { clue: 'A leader shaping food systems', field: 'Policy' },
+  { clue: 'A researcher turning evidence into action', field: 'Research' },
+  { clue: 'A technologist designing for scale', field: 'Technology' },
 ];
 
-function SpeakerBioDialog({ speaker, onClose, showAllLink = true }: { speaker: (typeof speakers)[number] | null; onClose: () => void; showAllLink?: boolean }) {
-  useEffect(() => {
-    if (!speaker) return;
-    const onKeyDown = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose(); };
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', onKeyDown);
-    return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', onKeyDown); };
-  }, [speaker, onClose]);
-  if (!speaker) return null;
-  return <div className="speaker-bio-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}><section className="speaker-bio-dialog" role="dialog" aria-modal="true" aria-labelledby="speaker-bio-name"><button className="speaker-bio-close" onClick={onClose} aria-label="Close speaker biography" autoFocus>Close</button><div className="speaker-bio-image" style={{ backgroundImage: `linear-gradient(180deg,transparent,rgba(7,25,35,.66)),url(${eventImage})` }}><span>{speaker.keynote ? 'Keynote speaker' : speaker.title}</span></div><div className="speaker-bio-content"><p className="eyebrow"><span /> Speaker profile</p><small>{speaker.title}</small><h2 id="speaker-bio-name">{speaker.name}</h2><strong>{speaker.org}</strong><p>{speaker.bio}</p><div className="speaker-bio-details"><div><span>Event</span><strong>AgriTech Fest 2026</strong></div><div><span>Location</span><strong>Kano, Nigeria</strong></div><div><span>Perspective</span><strong>{speaker.category}</strong></div></div>{showAllLink && <button className="button button-lime" onClick={() => { onClose(); navigate('/speakers'); }}>View all speakers</button>}</div></section></div>;
+function MysterySpeakerCard({ slot, index }: { slot: (typeof speakerRevealSlots)[number]; index: number }) {
+  return <article className={`mystery-speaker mystery-speaker-${(index % 3) + 1}`}><div className="mystery-speaker-art" aria-hidden="true"><span className="mystery-speaker-head" /><span className="mystery-speaker-body" /><strong>?</strong></div><div className="mystery-speaker-copy"><span>{slot.field}</span><h3>To be revealed</h3><p>{slot.clue}</p></div></article>;
 }
+
 const exhibitors = [
   { name: 'AgroDrone Systems', type: 'Technology', booth: 'A12', website: 'agrodrones.example', what: 'Drone mapping, crop monitoring and spraying.', category: 'technology' },
   { name: 'FarmLink Equipment', type: 'Equipment', booth: 'B04', website: 'farmlink.example', what: 'Smallholder machinery and fabrication.', category: 'equipment' },
@@ -502,28 +494,12 @@ const faqItems = [
 ];
 
 function SpeakersPage() {
-  const [filter, setFilter] = useState('all');
-  const [selected, setSelected] = useState<(typeof speakers)[number] | null>(null);
-  const filtered = speakers.filter((speaker) => filter === 'all' || speaker.category === filter || (filter === 'keynotes' && speaker.keynote));
-
   return (
-    <PageShell title="Speakers & Keynotes" subtitle="People to watch">
-      <div className="speakers-page">
-        <header className="speakers-page-intro"><div><span>{speakers.length} voices</span><h2>Meet the people moving agriculture <em>forward.</em></h2></div><p>Founders, researchers, investors and public-sector leaders sharing practical ideas for Africa’s agricultural future.</p></header>
-        <nav className="speaker-filters" aria-label="Filter speakers">
-          {['all', 'keynotes', 'founders', 'government', 'investors', 'researchers'].map((item) => <button key={item} className={filter === item ? 'active' : ''} onClick={() => setFilter(item)} aria-pressed={filter === item}>{item}</button>)}
-        </nav>
-        <div className="speakers-workspace">
-          <div className="speaker-directory" aria-live="polite">
-            {filtered.map((speaker, index) => (
-              <button key={speaker.name} className="speaker-directory-card" onClick={() => setSelected(speaker)} aria-label={`View ${speaker.name}'s biography`}>
-                <div className="speaker-directory-image" style={{ backgroundImage: `linear-gradient(180deg,transparent 35%,rgba(7,25,35,.78)),url(${eventImage})` }}><span>{String(index + 1).padStart(2, '0')}</span>{speaker.keynote && <b>Keynote</b>}</div>
-                <div><small>{speaker.title}</small><h3>{speaker.name}</h3><p>{speaker.org}</p></div>
-              </button>
-            ))}
-          </div>
-        </div>
-        <SpeakerBioDialog speaker={selected} onClose={() => setSelected(null)} showAllLink={false} />
+    <PageShell title="Speakers" subtitle="">
+      <div className="speakers-page speaker-reveal-page">
+        <header className="speaker-reveal-page-hero"><span>Names dropping soon</span><h2>Can you guess who is taking <em>the stage?</em></h2><p>A bold mix of founders, farmers, investors, researchers, technologists and public leaders is coming to Kano. The first reveal is closer than you think.</p><button className="button button-lime" onClick={() => navigate('/newsletter')}>Be first to know</button></header>
+        <div className="speaker-reveal-grid speaker-reveal-grid-full">{speakerRevealSlots.map((slot, index) => <MysterySpeakerCard key={slot.clue} slot={slot} index={index} />)}</div>
+        <section className="speaker-reveal-note"><span>Think you know someone on the list?</span><h2>Watch this space.</h2><p>Speaker announcements will be shared here and with newsletter subscribers first.</p></section>
       </div>
     </PageShell>
   );
@@ -643,19 +619,67 @@ function FaqPage() {
 }
 
 function NewsletterPage() {
+  const [subscribed, setSubscribed] = useState(false);
+
   return (
-    <PageShell title="Stay Updated" subtitle="Newsletter">
-      <div className="newsletter" style={{ borderRadius: 24, padding: 40 }}>
-        <div className="newsletter-inner" style={{ alignItems: 'start' }}>
-          <div><p className="eyebrow light-eyebrow"><span /> Keep in the loop</p><h2>Stay close to what’s next.</h2><p className="heading-note" style={{ color: '#dbe9d8' }}>Get speaker announcements, programme updates, Battlefield news and side events.</p></div>
-          <form onSubmit={async (e) => { e.preventDefault(); const form = new FormData(e.currentTarget); await subscribeToNewsletter({ first_name: String(form.get('first_name') || ''), email: String(form.get('email')), organisation: String(form.get('organisation') || ''), job_title: String(form.get('job_title') || '') }); e.currentTarget.reset(); }}>
-            <input name="first_name" placeholder="First name" />
-            <input name="email" required type="email" placeholder="Email" />
-            <input name="organisation" placeholder="Organisation" />
-            <input name="job_title" placeholder="Job title" />
-            <button type="submit">Stay updated</button>
-          </form>
-        </div>
+    <PageShell title="Newsletter" subtitle="">
+      <div className="newsletter-page">
+        <section className="newsletter-page-hero">
+          <div className="newsletter-page-copy">
+            <span className="newsletter-page-status"><i /> The signal from AgriTech Fest</span>
+            <h2>Know what’s next <em>before everyone else.</em></h2>
+            <p>Speaker reveals, programme drops, Battlefield news and the opportunities worth showing up for—sent with purpose, never noise.</p>
+            <div className="newsletter-page-promise">
+              <div><strong>01</strong><span>Speaker reveals</span></div>
+              <div><strong>02</strong><span>Programme updates</span></div>
+              <div><strong>03</strong><span>Access alerts</span></div>
+            </div>
+          </div>
+
+          <div className="newsletter-signup-card">
+            {subscribed ? (
+              <div className="newsletter-success" role="status">
+                <span>You're on the list</span>
+                <h3>Welcome to the inside track.</h3>
+                <p>We’ll send the next AgriTech Fest update straight to your inbox.</p>
+                <button type="button" onClick={() => setSubscribed(false)}>Add another email</button>
+              </div>
+            ) : (
+              <>
+                <header><span>Join the list</span><h3>Stay close to the Fest.</h3><p>Tell us where to reach you. The last two fields are optional.</p></header>
+                <form className="newsletter-page-form" onSubmit={async (event) => {
+                  event.preventDefault();
+                  const formElement = event.currentTarget;
+                  const form = new FormData(formElement);
+                  await subscribeToNewsletter({
+                    first_name: String(form.get('first_name') || ''),
+                    email: String(form.get('email')),
+                    organisation: String(form.get('organisation') || ''),
+                    job_title: String(form.get('job_title') || ''),
+                  });
+                  formElement.reset();
+                  setSubscribed(true);
+                }}>
+                  <label><span>First name</span><input name="first_name" autoComplete="given-name" placeholder="What should we call you?" /></label>
+                  <label><span>Email address <b>*</b></span><input name="email" required type="email" autoComplete="email" placeholder="you@example.com" /></label>
+                  <label><span>Organisation or school <small>Optional</small></span><input name="organisation" autoComplete="organization" placeholder="Where are you coming from?" /></label>
+                  <label><span>Role or field of interest <small>Optional</small></span><input name="job_title" autoComplete="organization-title" placeholder="Student, farmer, founder..." /></label>
+                  <button type="submit">Keep me in the loop <span>→</span></button>
+                  <p>By subscribing, you agree to receive event updates. Unsubscribe whenever you like.</p>
+                </form>
+              </>
+            )}
+          </div>
+        </section>
+
+        <section className="newsletter-preview">
+          <div><span>In your inbox</span><h2>Useful updates.<br />No filler.</h2></div>
+          <div className="newsletter-preview-list">
+            <article><span>Reveals</span><strong>The names taking the stage</strong><p>Meet speakers as soon as they are announced.</p></article>
+            <article><span>Plan</span><strong>The moments worth your time</strong><p>Programme highlights and timely schedule updates.</p></article>
+            <article><span>Access</span><strong>The opportunities with a deadline</strong><p>Applications, tickets and limited-capacity experiences.</p></article>
+          </div>
+        </section>
       </div>
     </PageShell>
   );
