@@ -762,7 +762,7 @@ function App() {
       '/privacy': 'Privacy Policy — AgriTech Fest 2026',
       '/terms': 'Terms & Conditions — AgriTech Fest 2026',
     };
-    document.title = location.pathname.startsWith('/admin') ? 'Admin Dashboard — AgriTech Fest 2026' : (!siteLive || location.pathname === '/maintenance' ? 'Something good is growing — AgriTech Fest 2026' : (pageTitles[location.pathname] ?? 'AgriTech Fest 2026'));
+    document.title = location.pathname.startsWith('/admin') ? 'Admin Dashboard — AgriTech Fest 2026' : (siteLive === false || location.pathname === '/maintenance' ? 'Something good is growing — AgriTech Fest 2026' : (pageTitles[location.pathname] ?? 'AgriTech Fest 2026'));
   }, [location.pathname, siteLive]);
 
   useEffect(() => {
@@ -775,7 +775,9 @@ function App() {
   }, [location.pathname, location.hash]);
 
   if (location.pathname === '/admin' || location.pathname.startsWith('/admin/')) return <Admin />;
-  if (!siteLive || location.pathname === '/maintenance') return <MaintenancePage />;
+  if (location.pathname === '/maintenance') return <MaintenancePage />;
+  if (siteLive === null) return <div className="site-boot" role="status" aria-label="Loading AgriTech Fest"><Mark /><span>Loading AgriTech Fest</span></div>;
+  if (!siteLive) return <MaintenancePage />;
   if (location.pathname === '/programme') return <ProgrammePage />;
   if (location.pathname === '/about') return <AboutPage />;
   if (location.pathname === '/speakers') return <SpeakersPage />;

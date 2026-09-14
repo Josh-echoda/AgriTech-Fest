@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getSiteLive } from './maintenance';
 
 export function useSiteLive() {
-  const [live, setLive] = useState(import.meta.env.DEV);
+  const [live, setLive] = useState<boolean | null>(import.meta.env.DEV ? true : null);
   useEffect(() => {
     // Local preview never reads or changes the hosted maintenance setting.
     if (import.meta.env.DEV) return;
