@@ -46,10 +46,6 @@ export default function TicketPass({ ticket, onBack }: TicketPassProps) {
 
         <header className="event-pass-header">
           <img src="/assets/images/LOGO_BRIGHT_.png" alt="AgriTech Fest 2026" />
-          <div className="event-pass-date">
-            <span>Admission date</span>
-            <strong>{attendance.date}</strong>
-          </div>
         </header>
 
         <div className="event-pass-details">

@@ -10,7 +10,7 @@ async function sendConfirmation(kind: 'ticket' | 'battlefield', code: string) {
   return !error && data?.sent === true;
 }
 
-export async function createTicket(input: { full_name: string; email: string; phone?: string; ticket_type: string; attendance_date: string; accessibility_notes?: string }) {
+export async function createTicket(input: { full_name: string; email: string; phone?: string; ticket_type: string; attendance_date: string; accessibility_notes?: string; role_designation?: string; looking_forward_to?: string; heard_about?: string }) {
   const ticket_code = `ATF-${crypto.randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()}`;
   const { error } = await client().from('tickets').insert({ ...input, ticket_code });
   if (error) throw error;

@@ -13,7 +13,7 @@ const passes = [
     name: 'Premium pass',
     price: '₦50,000',
     note: 'Experience the Fest differently. Get closer to the people, conversations and opportunities shaping African agriculture.',
-    benefits: ['Everything included in Regular', 'Fast-track registration', 'Premium wristband and credential', 'Priority seating', 'VIP/Premium Lounge access', 'Exclusive networking opportunities', 'Premium Meet & Mingle experience', 'Event merchandise pack', 'Premium refreshments', 'Reserved access to selected high-demand sessions', 'Curated founder and investor introductions', 'Exclusive Founders Mixer — Sunday, 15 November', 'Premium eCertificate and recognition'],
+    benefits: ['Everything included in Regular', 'Fast-track registration', 'Premium wristband and credential', 'Priority seating', 'VIP/Premium Lounge access', 'Exclusive networking opportunities', 'Premium Meet & Mingle experience', 'Event merchandise pack', 'Premium refreshments', 'Reserved access to selected high-demand sessions', 'Curated founder and investor introductions', 'Exclusive Founders Mixer', 'Premium eCertificate and recognition'],
   },
 ];
 export default function TicketRegistration({ onComplete }: { onComplete: () => void }) {
@@ -32,7 +32,7 @@ export default function TicketRegistration({ onComplete }: { onComplete: () => v
     if (!name) { setError('Please enter your full name.'); return; }
     locked.current = true; setBusy(true); setError('');
     try {
-      const saved = await createTicket({ full_name: name, email, phone: String(data.get('phone') || '').trim(), ticket_type: pass.name, attendance_date: day, accessibility_notes: String(data.get('notes') || '').trim() });
+      const saved = await createTicket({ full_name: name, email, phone: String(data.get('phone') || '').trim(), ticket_type: pass.name, attendance_date: day, accessibility_notes: String(data.get('notes') || '').trim(), role_designation: String(data.get('role') || ''), looking_forward_to: String(data.get('looking_forward_to') || ''), heard_about: String(data.get('heard_about') || '') });
       try { localStorage.setItem('agritech-ticket', JSON.stringify({ id: saved.ticket_code, name, email, type: pass.name, day })); }
       catch { setError(`Registration saved. Keep your reference ${saved.ticket_code} and contact info@e360.africa for your pass. Please do not register again.`); return; }
       onComplete();
@@ -47,6 +47,8 @@ export default function TicketRegistration({ onComplete }: { onComplete: () => v
       <label htmlFor="ticket-name">Full name *</label><input id="ticket-name" name="name" required autoComplete="name" placeholder="Enter your full name" />
       <label htmlFor="ticket-email">Email address *</label><input id="ticket-email" name="email" required type="email" autoComplete="email" aria-describedby="ticket-email-help" placeholder="you@example.com" /><small id="ticket-email-help">Use a personal, student or work email you can access.</small>
       <label htmlFor="ticket-phone">Phone number <small>(optional)</small></label><input id="ticket-phone" name="phone" type="tel" autoComplete="tel" placeholder="e.g. 0801 234 5678" />
+      <label htmlFor="ticket-role">Role / Designation *</label>
+      <select id="ticket-role" name="role" required defaultValue=""><option value="" disabled>Select your role</option>{['Student', 'Farmer', 'Founder / Entrepreneur', 'Agricultural professional', 'Researcher / Educator', 'Investor', 'Government / Development organisation', 'Technology professional', 'Other'].map(value => <option key={value}>{value}</option>)}</select>
     </fieldset>
     <fieldset disabled={busy}><legend>Your experience</legend>
       <label htmlFor="ticket-type">Ticket type *</label>
@@ -56,7 +58,11 @@ export default function TicketRegistration({ onComplete }: { onComplete: () => v
         <ul>{pass.benefits.map(benefit => <li key={benefit}><Check size={17} aria-hidden="true" /><span>{benefit}</span></li>)}</ul>
         <small>{pass.name === 'Premium pass' ? 'Regular gets you into the room. Premium gets you closer to the people you came to meet.' : 'No payment is required for the Regular pass.'}</small>
       </section>}</div>
-      <label htmlFor="attendance-day">Attendance day *</label><select id="attendance-day" name="day" defaultValue="" required><option value="" disabled>Select one festival day</option><option value="2026-11-12">Day 1 · Cultivate — 12 November 2026</option><option value="2026-11-13">Day 2 · Engineer — 13 November 2026</option><option value="2026-11-14">Day 3 · Scale — 14 November 2026</option></select>
+      <label htmlFor="attendance-day">Attendance day *</label><select id="attendance-day" name="day" defaultValue="" required><option value="" disabled>Select one festival day</option><option value="2026-11-12">Day 1 - Cultivate</option><option value="2026-11-13">Day 2 - Engineer</option><option value="2026-11-14">Day 3 - Scale</option></select>
+      <label htmlFor="ticket-interests">What are you looking forward to? *</label>
+      <select id="ticket-interests" name="looking_forward_to" required defaultValue=""><option value="" disabled>Select your main interest</option>{['Learning from speakers and panels', 'Networking and meeting collaborators', 'Technology demonstrations and exhibitions', 'AgriTech Battlefield', 'Investment and business opportunities', 'Career and learning opportunities', 'All of the above', 'Other'].map(value => <option key={value}>{value}</option>)}</select>
+      <label htmlFor="ticket-source">How did you hear about AgriTech Fest? *</label>
+      <select id="ticket-source" name="heard_about" required defaultValue=""><option value="" disabled>Select an option</option>{['Instagram', 'Facebook', 'WhatsApp', 'LinkedIn', 'X / Twitter', 'Friend or colleague', 'School / University', 'Radio', 'Community or partner organisation', 'Search engine', 'Other'].map(value => <option key={value}>{value}</option>)}</select>
       <label htmlFor="ticket-notes">Accessibility or support needs <small>(optional)</small></label><textarea id="ticket-notes" name="notes" rows={3} placeholder="Tell us how we can help you take part comfortably." />
     </fieldset>
     {error && <p className="atf-registration-error" role="alert">{error}</p>}
