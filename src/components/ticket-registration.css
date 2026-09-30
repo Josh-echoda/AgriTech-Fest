@@ -7,3 +7,6 @@
 .tickets-two-option{grid-template-columns:repeat(2,minmax(0,1fr));max-width:920px;margin-inline:auto}
 .tickets-two-option .ticket-card{min-height:0}
 @media(max-width:700px){.tickets-two-option{grid-template-columns:1fr}}
+
+.attendance-day-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.atf-registration .attendance-day-option{min-height:76px;margin:0;padding:13px;border:1px solid #dce3d7;border-radius:10px;display:flex;align-items:center;gap:11px;background:#f3f5f1;cursor:pointer;transition:border-color .2s,background .2s,box-shadow .2s}.atf-registration .attendance-day-option:has(input:checked){border-color:#388348;background:#eef8eb;box-shadow:0 0 0 2px #38834822}.atf-registration .attendance-day-option input{width:20px;height:20px;margin:0;padding:0;accent-color:#236e36}.attendance-day-option span{display:grid;gap:3px}.attendance-day-option strong{font-size:14px}.attendance-day-option small{font-size:12px}.attendance-day-options>small{grid-column:1/-1;margin-top:2px}
+@media(max-width:580px){.attendance-day-options{grid-template-columns:1fr}.atf-registration .attendance-day-option{min-height:64px}}

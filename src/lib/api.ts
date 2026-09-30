@@ -11,7 +11,7 @@ async function sendConfirmation(kind: 'ticket' | 'battlefield', code: string) {
   return !error && data?.sent === true;
 }
 
-export async function createTicket(input: { full_name: string; email: string; phone?: string; ticket_type: string; attendance_date: string; accessibility_notes?: string; role_designation?: string; looking_forward_to?: string; heard_about?: string }) {
+export async function createTicket(input: { full_name: string; email: string; phone?: string; ticket_type: string; attendance_date: string; attendance_dates?: string[]; accessibility_notes?: string; role_designation?: string; looking_forward_to?: string; heard_about?: string }) {
   if (input.ticket_type !== 'Regular pass') throw new Error('Premium passes must use secure checkout.');
   const ticket_code = `ATF-${crypto.randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()}`;
   const { error } = await client().from('tickets').insert({ ...input, ticket_code });
@@ -100,7 +100,7 @@ function mapAdminRow(section: AdminSectionKey, row: Record<string, unknown>): Ad
   if (section === 'speakers') return { id: String(row.id), title: String(row.name), subtitle: `${row.job_title || 'Speaker'} · ${row.organisation || ''}`, meta: String(row.category || ''), status: displayStatus(String(row.status)) };
   if (section === 'exhibitors') return { id: String(row.id), title: String(row.name), subtitle: `${row.category || 'Exhibitor'} · Booth ${row.booth || 'TBC'}`, meta: String(row.description || ''), status: displayStatus(String(row.review_status)) };
   if (section === 'partners') return { id: String(row.id), title: String(row.name), subtitle: String(row.tier || 'Partner'), meta: String(row.description || ''), status: displayStatus(String(row.status)) };
-  if (section === 'tickets') return { id: String(row.id), title: String(row.full_name), subtitle: `${row.ticket_type} · ${row.attendance_date || 'No day selected'} · ${row.ticket_code}`, meta: `${row.email} · ${date}`, status: displayStatus(String(row.status)) };
+  if (section === 'tickets') return { id: String(row.id), title: String(row.full_name), subtitle: `${row.ticket_type} · ${(Array.isArray(row.attendance_dates) ? row.attendance_dates : [row.attendance_date]).filter(Boolean).join(', ') || 'No day selected'} · ${row.ticket_code}`, meta: `${row.email} · ${date}`, status: displayStatus(String(row.status)) };
   if (section === 'battlefield') return { id: String(row.id), title: String(row.team_name), subtitle: `${row.category || 'Innovation'} · ${row.institution || ''}`, meta: String(row.solution || ''), status: displayStatus(String(row.review_status)) };
   if (section === 'inbox') return { id: String(row.id), title: String(row.subject || `${row.enquiry_type} enquiry`), subtitle: `From ${row.name}`, meta: date, status: displayStatus(String(row.status)) };
   return { id: String(row.id), title: String(row.subject), subtitle: String(row.preview_text || ''), meta: date, status: displayStatus(String(row.status)) };
@@ -120,7 +120,7 @@ export async function addAdminRecord(section: AdminSectionKey, title: string, su
     speakers: { name: title, job_title: subtitle, status: 'draft' },
     exhibitors: { name: title, category: subtitle, review_status: 'pending', is_public: false },
     partners: { name: title, tier: subtitle || 'Partner', status: 'draft' },
-    tickets: { full_name: title, email: subtitle, ticket_type: 'Regular pass', attendance_date: '2026-11-17', ticket_code: `ATF-${key.toUpperCase()}`, status: 'pending' },
+    tickets: { full_name: title, email: subtitle, ticket_type: 'Regular pass', attendance_date: '2026-11-17', attendance_dates: ['2026-11-17'], ticket_code: `ATF-${key.toUpperCase()}`, status: 'pending' },
     battlefield: { team_name: title, email: subtitle, review_status: 'pending' },
     inbox: { enquiry_type: 'contact', name: title, email: subtitle, status: 'pending' },
     newsletter: { subject: title, preview_text: subtitle, status: 'draft' },

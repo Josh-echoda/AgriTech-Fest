@@ -28,12 +28,13 @@ export default function TicketRegistration({ onComplete }: { onComplete: () => v
     const data = new FormData(event.currentTarget);
     const name = String(data.get('name') || '').trim();
     const email = String(data.get('email') || '').trim();
-    const day = String(data.get('day') || '');
+    const attendanceDays = pass.name === 'Premium pass' ? data.getAll('days').map(String) : [String(data.get('day') || '')];
+    if (!attendanceDays.length || attendanceDays.some(day => !day)) { setError('Please select your attendance day.'); return; }
     if (!String(data.get('phone') || '').trim()) { setError('Please enter your phone number.'); return; }
     if (!name) { setError('Please enter your full name.'); return; }
     locked.current = true; setBusy(true); setError('');
     try {
-      const input = { full_name: name, email, phone: String(data.get('phone') || '').trim(), ticket_type: pass.name, attendance_date: day, accessibility_notes: String(data.get('notes') || '').trim(), role_designation: String(data.get('role') || ''), looking_forward_to: String(data.get('looking_forward_to') || ''), heard_about: String(data.get('heard_about') || '') };
+      const input = { full_name: name, email, phone: String(data.get('phone') || '').trim(), ticket_type: pass.name, attendance_date: attendanceDays[0], attendance_dates: attendanceDays, accessibility_notes: String(data.get('notes') || '').trim(), role_designation: String(data.get('role') || ''), looking_forward_to: String(data.get('looking_forward_to') || ''), heard_about: String(data.get('heard_about') || '') };
       if (pass.name === 'Premium pass') {
         const checkout = await premiumPayment({ action: 'initialize', input });
         if (!checkout.authorization_url || !checkout.reference || new URL(checkout.authorization_url).hostname !== 'checkout.paystack.com') throw new Error('Unable to open secure checkout. Please try again.');
@@ -42,7 +43,7 @@ export default function TicketRegistration({ onComplete }: { onComplete: () => v
         return;
       }
       const saved = await createTicket(input);
-      try { localStorage.setItem('agritech-ticket', JSON.stringify({ id: saved.ticket_code, name, email, type: pass.name, day })); }
+      try { localStorage.setItem('agritech-ticket', JSON.stringify({ id: saved.ticket_code, name, email, type: pass.name, day: attendanceDays[0], days: attendanceDays })); }
       catch { setError(`Registration saved. Keep your reference ${saved.ticket_code} and contact info@e360.africa for your pass. Please do not register again.`); return; }
       onComplete();
     } catch (failure) {
@@ -68,7 +69,11 @@ export default function TicketRegistration({ onComplete }: { onComplete: () => v
         <ul>{pass.benefits.map(benefit => <li key={benefit}><Check size={17} aria-hidden="true" /><span>{benefit}</span></li>)}</ul>
         <small>{pass.name === 'Premium pass' ? 'Regular gets you into the room. Premium gets you closer to the people you came to meet.' : 'No payment is required for the Regular pass.'}</small>
       </section>}</div>
-      <label htmlFor="attendance-day">Attendance day *</label><select id="attendance-day" name="day" defaultValue="" required><option value="" disabled>Select one festival day</option><option value="2026-11-17">Day 1 - Cultivate</option><option value="2026-11-18">Day 2 - Engineer</option><option value="2026-11-19">Day 3 - Scale</option></select>
+            <label>{selected === 'Premium pass' ? 'Attendance days *' : 'Attendance day *'}</label>
+      {selected === 'Premium pass' ? <div className="attendance-day-options" role="group" aria-label="Choose one or more attendance days">
+        {[['2026-11-17', 'Day 1', 'Cultivate'], ['2026-11-18', 'Day 2', 'Engineer'], ['2026-11-19', 'Day 3', 'Scale']].map(([value, day, theme]) => <label className="attendance-day-option" key={value}><input type="checkbox" name="days" value={value} /><span><strong>{day}</strong><small>{theme}</small></span></label>)}
+        <small>Select any combination of festival days included with your Premium pass.</small>
+      </div> : <select id="attendance-day" name="day" defaultValue="" required><option value="" disabled>Select one festival day</option><option value="2026-11-17">Day 1 - Cultivate</option><option value="2026-11-18">Day 2 - Engineer</option><option value="2026-11-19">Day 3 - Scale</option></select>}
       <label htmlFor="ticket-interests">What are you looking forward to? *</label>
       <select id="ticket-interests" name="looking_forward_to" required defaultValue=""><option value="" disabled>Select your main interest</option>{['Learning from speakers and panels', 'Networking and meeting collaborators', 'Technology demonstrations and exhibitions', 'AgriTech Battlefield', 'Investment and business opportunities', 'Career and learning opportunities', 'All of the above', 'Other'].map(value => <option key={value}>{value}</option>)}</select>
       <label htmlFor="ticket-source">How did you hear about AgriTech Fest? *</label>

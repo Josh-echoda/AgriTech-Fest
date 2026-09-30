@@ -31,17 +31,19 @@ Deno.serve(async request => {
     }
     if (body.action === 'initialize') {
       const input = body.input || {};
-      const fields = ['full_name','email','phone','attendance_date','accessibility_notes','role_designation','looking_forward_to','heard_about'];
+      const fields = ['full_name','email','phone','accessibility_notes','role_designation','looking_forward_to','heard_about'];
       const attendee: Record<string,string> = {};
       for (const field of fields) attendee[field] = String(input[field] || '').trim().slice(0,2000);
-      if (!attendee.full_name || !attendee.phone || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(attendee.email) || !['2026-11-17','2026-11-18','2026-11-19'].includes(attendee.attendance_date)) return json({ error: 'Please complete your name, email, phone and attendance day.' },400);
+      const allowedDays = ['2026-11-17','2026-11-18','2026-11-19'];
+      const attendanceDates = [...new Set(Array.isArray(input.attendance_dates) ? input.attendance_dates.map(String) : [String(input.attendance_date || '')])].filter(day => allowedDays.includes(day)).sort();
+      if (!attendee.full_name || !attendee.phone || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(attendee.email) || attendanceDates.length < 1 || attendanceDates.length > 3) return json({ error: 'Please complete your name, email, phone and attendance days.' },400);
       const site = Deno.env.get('PAYSTACK_SITE_URL');
       if (!site) return json({ error: 'Checkout return address has not been configured.' },503);
       const reference = `ATFP-${crypto.randomUUID()}`;
-      const { data: ticket, error } = await db.from('tickets').insert({ ...attendee, ticket_type: 'Premium pass', status: 'pending', payment_reference: reference, payment_status: 'pending', payment_amount: 5000000, payment_domain: 'live' }).select('id').single();
+      const { data: ticket, error } = await db.from('tickets').insert({ ...attendee, attendance_date: attendanceDates[0], attendance_dates: attendanceDates, ticket_type: 'Premium pass', status: 'pending', payment_reference: reference, payment_status: 'pending', payment_amount: 5000000, payment_domain: 'live' }).select('id').single();
       if (error) return json({ error: 'Unable to reserve your pass. Registration may be full; contact info@e360.africa.' },409);
       try {
-        const result = await paystack('transaction/initialize', { email: attendee.email, amount: 5000000, currency: 'NGN', reference, callback_url: `${site.replace(/\/$/,'')}/tickets`, metadata: { ticket_id: ticket.id } });
+        const result = await paystack('transaction/initialize', { email: attendee.email, amount: 5000000, currency: 'NGN', reference, callback_url: `${site.replace(/\/$/,'')}/tickets`, metadata: { ticket_id: ticket.id, attendance_days: attendanceDates } });
         return json({ authorization_url: result.authorization_url, reference });
       } catch (error) {
         await db.from('tickets').update({ status: 'cancelled' }).eq('id',ticket.id);
@@ -80,7 +82,7 @@ Deno.serve(async request => {
     if (confirmError || !confirmed || confirmed.payment_status !== 'paid' || !['confirmed','checked_in'].includes(confirmed.status)) return json({ error: 'Payment verification needs staff review. Contact info@e360.africa and do not pay again.' },409);
     // Existing email endpoint uses provider idempotency to prevent duplicate emails.
     await fetch(`${url}/functions/v1/send-confirmation`, { method:'POST', headers:{ Authorization:`Bearer ${serviceKey}`, 'Content-Type':'application/json' }, body:JSON.stringify({ kind:'ticket', code:ticket.ticket_code }) }).catch(() => null);
-    return json({ ticket: { id:ticket.ticket_code, name:ticket.full_name, email:ticket.email, type:ticket.ticket_type, day:ticket.attendance_date }, test:false });
+    return json({ ticket: { id:ticket.ticket_code, name:ticket.full_name, email:ticket.email, type:ticket.ticket_type, day:ticket.attendance_date, days:ticket.attendance_dates || [ticket.attendance_date] }, test:false });
   } catch (error) {
     return json({ error: error instanceof Error ? error.message : 'Payment could not be processed. Please retry.' },500);
   }

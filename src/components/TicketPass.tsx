@@ -10,6 +10,7 @@ export type TicketPassData = {
   email: string;
   type: string;
   day: string;
+  days?: string[];
   test?: boolean;
 };
 
@@ -44,7 +45,11 @@ export default function TicketPass({ ticket, onBack }: TicketPassProps) {
     finally { setSaving(false); }
   }
   const legacyDays: Record<string, string> = { '2026-11-12': '2026-11-17', '2026-11-13': '2026-11-18', '2026-11-14': '2026-11-19' };
-  const attendance = festivalDays[legacyDays[ticket.day] || ticket.day] ?? { day: 'Selected festival day', date: ticket.day, venue: 'Kano, Nigeria' };
+  const selectedDays = (ticket.days?.length ? ticket.days : [ticket.day]).map(day => legacyDays[day] || day);
+  const attendanceDetails = selectedDays.map(day => festivalDays[day]).filter(Boolean);
+  const attendance = attendanceDetails.length > 1
+    ? { day: attendanceDetails.map(item => item.day).join(' · '), date: attendanceDetails.map(item => item.date).join(' · '), venue: 'Multiple festival venues' }
+    : attendanceDetails[0] ?? { day: 'Selected festival day', date: ticket.day, venue: 'Kano, Nigeria' };
   const qrValue = `AGRITECH-FEST-2026:${ticket.id}`;
 
   return (

@@ -268,7 +268,7 @@ const routeMap: Record<string, string> = {
 
   sponsors: '/sponsors-partners',
 
-  sponsor: '/sponsor',
+  sponsor: '/sponsors-partners',
 
   tickets: '/tickets',
 
@@ -318,7 +318,7 @@ function SiteFooter({ navigateTo }: { navigateTo: (path: string) => void }) {
 
         <div className="footer-col"><b>Explore</b><button onClick={() => navigateTo('/about')}>About</button><button onClick={() => navigateTo('/programme')}>Programme</button><button onClick={() => navigateTo('/speakers')}>Speakers</button><button onClick={() => navigateTo('/battlefield')}>Battlefield</button></div>
 
-        <div className="footer-col"><b>Get involved</b><button onClick={() => navigateTo('/tickets')}>Tickets</button><button onClick={() => navigateTo('/sponsor')}>Sponsor</button><button onClick={() => navigateTo('/exhibit')}>Exhibit</button><button onClick={() => navigateTo('/media')}>Media pass</button></div>
+        <div className="footer-col"><b>Get involved</b><button onClick={() => navigateTo('/tickets')}>Tickets</button><button onClick={() => navigateTo('/sponsors-partners')}>Sponsors &amp; Partners</button><button onClick={() => navigateTo('/exhibit')}>Exhibit</button><button onClick={() => navigateTo('/media')}>Media pass</button></div>
 
         <div className="footer-col"><b>Connect</b><button onClick={() => navigateTo('/contact')}>Contact</button><a href="https://www.instagram.com/agritechfest_/" target="_blank" rel="noreferrer">Instagram</a><a href="https://www.facebook.com/Agritechfest" target="_blank" rel="noreferrer">Facebook</a></div>
 
@@ -492,7 +492,7 @@ function HomePage() {
 
           <div className="container hero-content">
 
-            <div className="hero-copy"><h1>Where the future of Food <em>Begins.</em></h1><p className="hero-description">The conference bringing Africa’s agritech ecosystem together to connect, collaborate, exchange ideas and celebrate the technologies and people transforming agriculture across the continent.</p><div className="hero-buttons"><button className="button button-lime" onClick={() => scrollTo('tickets')}>Secure your spot</button><button className="button button-outline" onClick={() => scrollTo('sponsor')}>Become a sponsor</button></div></div>
+            <div className="hero-copy"><h1>Where the future of Food <em>Begins.</em></h1><p className="hero-description">The conference bringing Africa’s agritech ecosystem together to connect, collaborate, exchange ideas and celebrate the technologies and people transforming agriculture across the continent.</p><div className="hero-buttons"><button className="button button-lime" onClick={() => scrollTo('tickets')}>Secure your spot</button><button className="button button-outline" onClick={() => navigate('/sponsors-partners')}>Become a sponsor</button></div></div>
 
 
 
@@ -514,7 +514,7 @@ function HomePage() {
 
 
 
-        <section className="numbers container" aria-label="Event at a glance"><div className="numbers-grid"><CountUpStat value={3} label="days" /><CountUpStat value={3} label="venues" /><CountUpStat value={2000} label="participants" /><CountUpStat value={10} suffix="+" label="speakers" /><CountUpStat value={20} suffix="+" label="exhibitors" /><CountUpStat value={5} label="battlefield finalists" /></div></section>
+        <section className="numbers container" aria-label="Event at a glance"><div className="numbers-grid"><CountUpStat value={3} label="days" /><CountUpStat value={3} label="venues" /><CountUpStat value={3000} label="participants" /><CountUpStat value={10} suffix="+" label="speakers" /><CountUpStat value={20} suffix="+" label="exhibitors" /><CountUpStat value={5} label="battlefield finalists" /></div></section>
 
 
 
@@ -573,7 +573,7 @@ function HomePage() {
 
 
 
-        <section className="sponsor section" id="sponsor"><div className="container sponsor-grid"><div><p className="eyebrow light-eyebrow"><span /> Partnerships</p><h2>Put your brand where agriculture meets <em>innovation.</em></h2><button className="button button-lime" onClick={() => navigate('/sponsor')}>Become a sponsor</button></div><div className="benefit-list">{[['NETWORK', 'Meet the ecosystem.'], ['GENERATE LEADS', 'Meet tomorrow’s customers and partners.'], ['INNOVATE', 'Get closer to what’s next.'], ['GAIN EXPOSURE', 'Be visible to the people who matter.']].map(([title, text], i) => <div className="benefit" key={title}><span>0{i + 1}</span><div><strong>{title}</strong><p>{text}</p></div><ArrowUpRight size={18} /></div>)}</div></div></section>
+        <section className="sponsor section" id="sponsor"><div className="container sponsor-grid"><div><p className="eyebrow light-eyebrow"><span /> Partnerships</p><h2>Put your brand where agriculture meets <em>innovation.</em></h2><button className="button button-lime" onClick={() => navigate('/sponsors-partners')}>Become a sponsor</button></div><div className="benefit-list">{[['NETWORK', 'Meet the ecosystem.'], ['GENERATE LEADS', 'Meet tomorrow’s customers and partners.'], ['INNOVATE', 'Get closer to what’s next.'], ['GAIN EXPOSURE', 'Be visible to the people who matter.']].map(([title, text], i) => <div className="benefit" key={title}><span>0{i + 1}</span><div><strong>{title}</strong><p>{text}</p></div><ArrowUpRight size={18} /></div>)}</div></div></section>
 
 
 
@@ -637,7 +637,7 @@ function HomePage() {
 
 
 
-      <footer className="footer"><div className="container footer-grid"><div className="footer-brand"><Mark light /><p>Where the future of<br />Food begins.</p></div><div className="footer-col"><b>Explore</b><button onClick={() => scrollTo('about')}>About</button><button onClick={() => scrollTo('programme')}>Programme</button><button onClick={() => scrollTo('speakers')}>Speakers</button><button onClick={() => scrollTo('battlefield')}>Battlefield</button></div><div className="footer-col"><b>Get involved</b><button onClick={() => scrollTo('tickets')}>Tickets</button><button onClick={() => scrollTo('sponsor')}>Sponsor</button><button onClick={() => scrollTo('exhibit')}>Exhibit</button><button onClick={() => navigate('/media')}>Media pass</button></div><div className="footer-col"><b>Connect</b><button onClick={() => navigate('/contact')}>Contact</button><a href="https://www.instagram.com/agritechfest_/" target="_blank" rel="noreferrer">Instagram</a><a href="https://www.facebook.com/Agritechfest" target="_blank" rel="noreferrer">Facebook</a></div></div><div className="container footer-bottom"><span><button onClick={() => navigate('/privacy')}>Privacy</button> · <button onClick={() => navigate('/terms')}>Terms</button></span><span>© 2026 e360 Africa — Efficience 360 Technologies Ltd.</span><button onClick={() => scrollTo('top')}>Back to top</button></div></footer>
+      <footer className="footer"><div className="container footer-grid"><div className="footer-brand"><Mark light /><p>Where the future of<br />Food begins.</p></div><div className="footer-col"><b>Explore</b><button onClick={() => scrollTo('about')}>About</button><button onClick={() => scrollTo('programme')}>Programme</button><button onClick={() => scrollTo('speakers')}>Speakers</button><button onClick={() => scrollTo('battlefield')}>Battlefield</button></div><div className="footer-col"><b>Get involved</b><button onClick={() => scrollTo('tickets')}>Tickets</button><button onClick={() => navigate('/sponsors-partners')}>Sponsors &amp; Partners</button><button onClick={() => scrollTo('exhibit')}>Exhibit</button><button onClick={() => navigate('/media')}>Media pass</button></div><div className="footer-col"><b>Connect</b><button onClick={() => navigate('/contact')}>Contact</button><a href="https://www.instagram.com/agritechfest_/" target="_blank" rel="noreferrer">Instagram</a><a href="https://www.facebook.com/Agritechfest" target="_blank" rel="noreferrer">Facebook</a></div></div><div className="container footer-bottom"><span><button onClick={() => navigate('/privacy')}>Privacy</button> · <button onClick={() => navigate('/terms')}>Terms</button></span><span>© 2026 e360 Africa — Efficience 360 Technologies Ltd.</span><button onClick={() => scrollTo('top')}>Back to top</button></div></footer>
 
     </div>
 
@@ -667,7 +667,7 @@ function AboutPage() {
 
         <section className="about-page-copy"><p>It is designed as a working event, not just a conference: a place to discover useful technology, learn from people doing the work and build relationships that can lead to pilots, partnerships and investment.</p><p>Kano gives the festival access to a dense agricultural ecosystem, strong institutions and the kind of energy that makes innovation feel grounded in reality.</p></section>
 
-        <section className="about-page-numbers" aria-label="Event at a glance"><CountUpStat value={3} label="days" /><CountUpStat value={3} label="experiences" /><CountUpStat value={2000} label="participants" /><CountUpStat value={20} suffix="+" label="exhibitors" /><CountUpStat value={10} suffix="+" label="speakers" /><CountUpStat value={5} label="battlefield finalists" /></section>
+        <section className="about-page-numbers" aria-label="Event at a glance"><CountUpStat value={3} label="days" /><CountUpStat value={3} label="experiences" /><CountUpStat value={3000} label="participants" /><CountUpStat value={20} suffix="+" label="exhibitors" /><CountUpStat value={10} suffix="+" label="speakers" /><CountUpStat value={5} label="battlefield finalists" /></section>
 
         <section className="about-page-promise"><header><p className="eyebrow light-eyebrow"><span /> What the festival creates</p><h2>Come for the ideas.<br /><em>Leave with momentum.</em></h2></header><div>{promiseItems.map(([title, subtitle, copy], index) => <article key={title}><span>0{index + 1}</span><small>{title}</small><h3>{subtitle}</h3><p>{copy}</p></article>)}</div></section>
 
@@ -1057,15 +1057,15 @@ function SponsorsPartnersPage() {
 
   const partnerGroups = [
 
-    ['Official Partners', ['STERLING BANK', 'MTN']],
+    ['Headline Sponsors', []],
 
     ['Supporting Partners', ['e360 AFRICA', 'KANO STATE']],
 
-    ['Ecosystem Partners', ['BUK', 'AGRO INNOVATE']],
+    ['Ecosystem Partners', ['BUK', 'ABCOAD']],
 
-    ['Media Partners', ['Radio Kano', 'AgriNews Hub']],
+    ['Media Partners', ['Cool FM', 'Wazobia FM']],
 
-    ['Community Partners', ['Young Farmers Network', 'Agro Startups Hub']],
+    ['Community Partners', []],
 
   ] as const;
 
@@ -1087,7 +1087,7 @@ function SponsorsPartnersPage() {
 
       <div className="partners-page">
 
-        <section className="partners-page-hero"><div><span>Partnership with purpose</span><h2>Put your organisation where agriculture meets <em>innovation.</em></h2><p>Build meaningful visibility and relationships with the people shaping technology, food systems, youth and agricultural transformation.</p><div><button className="button button-lime" onClick={() => navigate('/sponsor')}>Become a sponsor</button><a href="/downloads/agritech-fest-2026-sponsorship-exhibitor-prospectus.pdf" download>Download sponsorship prospectus</a></div></div><aside><small>Headline partner</small><strong>STERLING <span>BANK</span></strong><p>Supporting the conversations and connections moving African agriculture forward.</p></aside></section>
+        <section className="partners-page-hero"><div><span>Partnership with purpose</span><h2>Put your organisation where agriculture meets <em>innovation.</em></h2><p>Build meaningful visibility and relationships with the people shaping technology, food systems, youth and agricultural transformation.</p><div><button className="button button-lime" onClick={() => navigate('/sponsor')}>Become a sponsor</button><a href="/downloads/agritech-fest-2026-sponsorship-exhibitor-prospectus.pdf" download>Download sponsorship prospectus</a></div></div><aside className="partners-headline-placeholder" aria-label="Headline sponsor space" /></section>
 
         <section className="partners-benefits">{benefits.map(([title,copy],index) => <article key={title}><span>0{index + 1}</span><Sparkles size={19} /><h3>{title}</h3><p>{copy}</p></article>)}</section>
 
@@ -1171,9 +1171,7 @@ function GetInvolvedPage() {
 
     ['EXHIBITORS', 'Put your technology in front of the ecosystem.', 'Demonstrate products, meet buyers and make your solution tangible for attendees.', '/get-involved#exhibit-enquiry', 'Enquire to exhibit'],
 
-    ['SPONSORS', 'Put your brand behind the future.', 'Build visibility and meaningful relationships across the agricultural innovation ecosystem.', '/sponsors-partners', 'Become a sponsor'],
-
-    ['PARTNERS', 'Help us create measurable agricultural impact.', 'Collaborate on programmes, access, research and lasting outcomes beyond the event.', '/sponsors-partners', 'Partner with us'],
+    ['SPONSORS & PARTNERS', 'Put your organisation behind the future.', 'Build visibility, collaborate on programmes and create measurable impact across the agricultural innovation ecosystem.', '/sponsors-partners', 'Partner with us'],
 
     ['MEDIA', 'Cover one of Africa’s emerging agricultural technology gatherings.', 'Access the stories, innovators and conversations defining what comes next.', '/media', 'Get media pass'],
 

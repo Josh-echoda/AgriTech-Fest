@@ -4,7 +4,7 @@ import './site-nav.css';
 import './site-nav-split.css';
 const mobileLinks = [
   ['About', '/about'], ['Battlefield', '/battlefield'], ['Tickets', '/tickets'],
-  ['Sponsor', '/sponsor'], ['Speakers', '/speakers'], ['Exhibition', '/exhibit'],
+  ['Partners', '/sponsors-partners'], ['Speakers', '/speakers'], ['Exhibition', '/exhibit'],
   ['Programme', '/programme'], ['Get involved', '/get-involved'],
 ] as const;
 const links = [
