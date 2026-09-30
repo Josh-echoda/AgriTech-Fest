@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 export default function usePublicMotion(path: string, live: boolean | null) {
   useEffect(() => {
     if (path.startsWith('/admin') || !live) return;
-    const preference = window.matchMedia('(max-width: 820px) and (prefers-reduced-motion: no-preference)');
+    const preference = window.matchMedia('(prefers-reduced-motion: no-preference)');
     let observer: IntersectionObserver | undefined;
     let nodes: Element[] = [];
     const setup = () => {

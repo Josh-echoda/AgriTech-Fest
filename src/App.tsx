@@ -12,7 +12,8 @@ import './components/supporter-logos.css';
 
 import './components/speaker-reveal.css';
 
-import './components/newsletter-page.css';
+import InlineSignup from './components/InlineSignup';
+import './components/public-updates.css';
 
 import MaintenancePage from './components/MaintenancePage';
 
@@ -23,6 +24,7 @@ import SiteNav from './components/SiteNav';
 import TicketPass from './components/TicketPass';
 
 import TicketRegistration from './components/TicketRegistration';
+import PaymentReturn from './components/PaymentReturn';
 
 import BattlefieldApplication from './components/BattlefieldApplication';
 
@@ -37,8 +39,6 @@ import {
   CalendarDays,
 
   ChevronRight,
-
-  CircleArrowUp,
 
   Sparkles,
 
@@ -130,7 +130,7 @@ const days = [
 
   { number: '02', title: 'ENGINEER', label: 'Farmers · Research · Technology', place: 'Bayero University Kano, BUK New Site Campus', text: 'Collaboration & Farmer Engagement Day focused on farmer inclusion, inter-university exchange and agri-business.', color: 'gold' },
 
-  { number: '03', title: 'SCALE', label: 'Policy · Investment · Partnership', place: 'Coronation Hall, Government House or Meena Events', text: 'Policy, pitch & partnership day for dialogue, investment and major announcements.', color: 'navy' },
+  { number: '03', title: 'SCALE', label: 'Policy · Investment · Partnership', place: 'Meena Event Center', text: 'Policy, pitch & partnership day for dialogue, investment and major announcements.', color: 'navy' },
 
 ];
 
@@ -194,7 +194,7 @@ const programmeDays = [
 
       ['4:15 PM', 'Fun activity', 'Farmers vs Students quiz bowl and networking games to spark collaboration.'],
 
-      ['5:00 PM', 'Close Day 2', 'Cultural showcase, entertainment, recap and preview of Government House Day.'],
+      ['5:00 PM', 'Close Day 2', 'Cultural showcase, entertainment, recap and preview of Day 3 at Meena Event Center.'],
 
     ],
 
@@ -204,7 +204,7 @@ const programmeDays = [
 
     tab: 'Day 03 · Scale',
 
-    intro: 'Venue: Government House or Meena Events. Focus: Policy Dialogue, Grand Pitch Competition, Sponsorship Announcements.',
+    intro: 'Venue: Meena Event Center. Focus: Policy Dialogue, Grand Pitch Competition, Sponsorship Announcements.',
 
     sessions: [
 
@@ -276,7 +276,7 @@ const routeMap: Record<string, string> = {
 
   faq: '/faq',
 
-  newsletter: '/newsletter',
+
 
   contact: '/contact',
 
@@ -314,17 +314,17 @@ function SiteFooter({ navigateTo }: { navigateTo: (path: string) => void }) {
 
       <div className="container footer-grid">
 
-        <div className="footer-brand"><Mark light /><p>Where the future<br />Food begins.</p><span>© 2026 e360 Africa — Efficience 360 Technologies Ltd.</span></div>
+        <div className="footer-brand"><Mark light /><p>Where the future<br />Food begins.</p></div>
 
         <div className="footer-col"><b>Explore</b><button onClick={() => navigateTo('/about')}>About</button><button onClick={() => navigateTo('/programme')}>Programme</button><button onClick={() => navigateTo('/speakers')}>Speakers</button><button onClick={() => navigateTo('/battlefield')}>Battlefield</button></div>
 
         <div className="footer-col"><b>Get involved</b><button onClick={() => navigateTo('/tickets')}>Tickets</button><button onClick={() => navigateTo('/sponsor')}>Sponsor</button><button onClick={() => navigateTo('/exhibit')}>Exhibit</button><button onClick={() => navigateTo('/media')}>Media pass</button></div>
 
-        <div className="footer-col"><b>Connect</b><button onClick={() => navigateTo('/newsletter')}>Newsletter</button><button onClick={() => navigateTo('/contact')}>Contact</button><a href="https://www.instagram.com/agritechfest_/" target="_blank" rel="noreferrer">Instagram</a><a href="https://www.facebook.com/Agritechfest" target="_blank" rel="noreferrer">Facebook</a></div>
+        <div className="footer-col"><b>Connect</b><button onClick={() => navigateTo('/contact')}>Contact</button><a href="https://www.instagram.com/agritechfest_/" target="_blank" rel="noreferrer">Instagram</a><a href="https://www.facebook.com/Agritechfest" target="_blank" rel="noreferrer">Facebook</a></div>
 
       </div>
 
-      <div className="container footer-bottom"><span><button onClick={() => navigateTo('/privacy')}>Privacy</button> · <button onClick={() => navigateTo('/terms')}>Terms</button></span><span>Made for the people building tomorrow.</span><button onClick={() => navigateTo('/')}>Back to top</button></div>
+      <div className="container footer-bottom"><span><button onClick={() => navigateTo('/privacy')}>Privacy</button> · <button onClick={() => navigateTo('/terms')}>Terms</button></span><span>© 2026 e360 Africa — Efficience 360 Technologies Ltd.</span><button onClick={() => navigateTo('/')}>Back to top</button></div>
 
     </footer>
 
@@ -502,7 +502,7 @@ function HomePage() {
 
             </div>
 
-            <div className="hero-footer"><span>3 days</span><i /> <span>3 experiences</span><i /> <span>one agricultural future</span><div className="hero-scroll"><CircleArrowUp size={18} /> scroll to explore</div></div>
+
 
           </div>
 
@@ -522,19 +522,50 @@ function HomePage() {
 
 
 
-        <section className="promise section" id="promise"><div className="container"><div className="promise-heading"><div><p className="eyebrow"><span /> The promise</p><h2>Come for the ideas.<br /><em>Leave with momentum.</em></h2></div><p>One place to meet the people, technologies and opportunities moving African agriculture forward.</p></div><div className="promise-grid">{promiseItems.map(([title, subtitle, text], i) => <article className="promise-card" key={title}><span className="card-number">0{i + 1}</span><span className="promise-title">{title}</span><h3>{subtitle}</h3><p>{text}</p><ArrowUpRight className="card-arrow" size={20} /></article>)}</div></div></section>
+        <section className="promise section" id="promise"><div className="container"><div className="promise-heading"><div><p className="eyebrow"><span /> The promise</p><h2>Come for the ideas.<br /><em>Leave with momentum.</em></h2></div></div><div className="promise-grid">{promiseItems.map(([title, subtitle, text], i) => <article className="promise-card" key={title}><span className="card-number">0{i + 1}</span><span className="promise-title">{title}</span><h3>{subtitle}</h3><p>{text}</p><ArrowUpRight className="card-arrow" size={20} /></article>)}</div></div></section>
 
 
 
-        <section className="days section container" id="programme"><div className="section-heading-row"><div><p className="eyebrow"><span /> Three days. Three experiences.</p><h2>A festival with a <em>point of view.</em></h2></div><button className="arrow-link desktop-only" onClick={() => navigate('/programme')}>Explore full programme</button></div><div className="days-grid">{days.map((item, i) => <article className={`day-card day-${item.color}`} key={item.number}><div className="day-top"><span>Day {item.number}</span><Sprout size={21} /></div><h3>{item.title}</h3><strong>{item.label}</strong><p>{item.text}</p><button className="day-link" onClick={() => navigate('/programme')}>View day {i + 1}</button></article>)}</div></section>
+        <section className="days section container" id="programme"><div className="section-heading-row"><div><p className="eyebrow"><span /> Three days. Three experiences.</p><h2>A festival with a <em>point of view.</em></h2></div><button className="arrow-link desktop-only" onClick={() => navigate('/programme')}>Explore full programme</button></div><div className="days-grid">{days.map((item, i) => <article className={`day-card day-${item.color}`} key={item.number}><div className="day-top"><span>Day {item.number}</span></div><h3>{item.title}</h3><strong>{item.label}</strong><p>{item.text}</p><button className="day-link" onClick={() => navigate('/programme#day-' + (i + 1))}>View day {i + 1}</button></article>)}</div></section>
 
 
 
-        <section className="battlefield" id="battlefield"><div className="battlefield-shape shape-one" /><div className="battlefield-shape shape-two" /><div className="container battlefield-inner"><div className="battlefield-top"><p className="eyebrow light-eyebrow"><span /> The innovation arena</p><Trophy size={44} /></div><h2>AgriTech<br /><em>Battlefield</em></h2><p className="battlefield-tag">Build it. Defend it. Scale it.</p><p className="battlefield-copy">Africa’s agricultural challenges need more than ideas. AgriTech Battlefield discovers and accelerates young innovators building practical solutions for the future of agriculture.</p><div className="funnel">{[['30+', 'applications'], ['20', 'shortlisted'], ['10', 'innovators'], ['05', 'finalists'], ['01', 'champion']].map(([n, label], i) => <div className="funnel-step" key={label}><strong>{n}</strong><span>{label}</span>{i < 4 && <ChevronRight className="funnel-arrow" />}</div>)}</div><div className="hero-buttons"><button className="button button-lime" onClick={() => navigate('/battlefield#apply')}>Enter the battlefield</button><button className="button button-outline" onClick={() => navigate('/battlefield')}>Explore competition</button></div></div></section>
+        <section className="battlefield battlefield-arena" id="battlefield" aria-labelledby="arena-title">
+          <div className="container arena-layout">
+            <div className="arena-intro">
+              <h2 id="arena-title">AgriTech<br /><em>Battlefield.</em></h2>
+              <p className="arena-manifesto">Build it.<br />Defend it.<br /><span>Scale it.</span></p>
+              <p className="arena-description">Big challenges need bold builders. Bring your solution for African agriculture to the stage — and show us what it can do.</p>
+              <div className="arena-actions"><button className="button" onClick={() => navigate('/battlefield#apply')}>Enter the Battlefield <ArrowUpRight size={20} aria-hidden="true" /></button><button className="arena-details" onClick={() => navigate('/battlefield')}>How it works <ChevronRight size={16} aria-hidden="true" /></button></div>
+            </div>
+            <div className="arena-visual">
+              <div className="arena-grid" aria-hidden="true" /><div className="arena-ring" aria-hidden="true" /><div className="arena-ring ring-inner" aria-hidden="true" />
+              <div className="arena-champion"><Trophy size={52} strokeWidth={1.3} aria-hidden="true" /><strong>01</strong><span>CHAMPION</span><p>The next big thing<br />could be yours.</p></div>
+              <span className="arena-floating arena-floating-one">Real problems.</span><span className="arena-floating arena-floating-two">Practical solutions.</span>
+              <div className="arena-visual-footer"><span>From idea to impact</span><ArrowUpRight size={24} aria-hidden="true" /></div>
+            </div>
+            <div className="arena-journey"><div className="arena-journey-heading"><h3>Your route to the stage</h3><span>The competition journey</span></div><ol>{[['30+', 'Applications'], ['20', 'Shortlisted'], ['10', 'Innovators'], ['05', 'Finalists'], ['01', 'Champion']].map(([number, label], index) => <li key={label}><span className="arena-step">0{index + 1}</span><strong>{number}</strong><span>{label}</span>{index < 4 && <ChevronRight size={17} aria-hidden="true" />}</li>)}</ol></div>
+          </div>
+        </section>
 
 
 
-        <section className="exhibit section" id="exhibit"><div className="container exhibit-card"><div className="exhibit-image" style={{ backgroundImage: `url(${farmerImage})` }}><div className="image-tag"><Sprout size={16} /> In the field</div></div><div className="exhibit-copy"><p className="eyebrow"><span /> Exhibition</p><h2>Don’t just tell us what you’re building.<br /><em>Show us.</em></h2><p>Put your technology, products and solutions directly in front of farmers, founders, students, institutions, investors and policymakers.</p><div className="category-list">{['AgriTech', 'Machinery', 'Seeds', 'Inputs', 'Processing', 'Drones', 'Finance', 'Software', 'Research'].map(item => <span key={item}>{item}</span>)}</div><button className="button button-dark" onClick={() => navigate('/exhibit')}>Enquire to exhibit</button></div></div></section>
+        <section className="exhibit section exhibit-showcase" id="exhibit">
+          <div className="container showcase-layout">
+            <div className="showcase-photo" style={{ backgroundImage: `url(${farmerImage})` }}>
+              <div className="showcase-orbit" aria-hidden="true"><span>Ideas into action ↗</span></div>
+              <div className="showcase-photo-caption"><span>From the field.</span><strong>To the forefront.</strong></div>
+            </div>
+            <div className="showcase-copy">
+              <h2>Built to change<br />agriculture?<br /><em>Let’s see it.</em></h2>
+              <p>Bring your technology, products and big ideas face to face with the people ready to use them.</p>
+              <div className="showcase-reasons"><span><b>01</b> Demonstrate your solution</span><span><b>02</b> Meet your next customer</span><span><b>03</b> Start a new partnership</span></div>
+              <button className="button showcase-cta" onClick={() => window.dispatchEvent(new CustomEvent('open-enquiry', { detail: 'exhibitor' }))}>Enquire to exhibit <span aria-hidden="true">↗</span></button>
+              <small>For startups, businesses, researchers and bold ideas.</small>
+            </div>
+            <div className="showcase-ticker"><div>{[0,1].map(copy => <span key={copy} aria-hidden={copy === 1}>{['AgriTech','Machinery','Seeds','Drones','Finance','Software','Research'].map(item => <span key={item}>{item}<i aria-hidden="true">✳</i></span>)}</span>)}</div></div>
+          </div>
+        </section>
 
 
 
@@ -592,9 +623,9 @@ function HomePage() {
 
 
 
-        <section className="mobile-participate"><div><span>Make it happen</span><h2>Be part of the team behind the Fest.</h2><p>Want to contribute your time, skills or community? Tell our team how you would like to get involved.</p><button className="button button-dark" onClick={() => navigate('/contact')}>Volunteer enquiry</button></div><div><span>Stay connected</span><h2>The conversation starts here.</h2><p>Get speaker reveals, programme news and opportunities from the AgriTech community.</p><button className="button button-lime" onClick={() => navigate('/newsletter')}>Join the update list</button></div></section>
+        <section className="mobile-participate"><div><span>Make it happen</span><h2>Be part of the team behind the Fest.</h2><p>Want to contribute your time, skills or community? Tell our team how you would like to get involved.</p><button className="button button-dark" onClick={() => navigate('/contact')}>Volunteer enquiry</button></div><div><span>Stay connected</span><h2>The conversation starts here.</h2><p>Get speaker reveals, programme news and opportunities from the AgriTech community.</p><InlineSignup label="Join the update list" /></div></section>
 
-        <section className="newsletter"><div className="container newsletter-inner"><div><p className="eyebrow"><span /> Keep in the loop</p><h2>Stay close to <em>what’s next.</em></h2></div><form onSubmit={async (e) => { e.preventDefault(); const form = new FormData(e.currentTarget); await subscribeToNewsletter({ email: String(form.get('email')) }); e.currentTarget.reset(); }}><input name="email" required type="email" placeholder="Your email address" aria-label="Your email address" /><button type="submit">Stay updated</button></form></div></section>
+        <section className="newsletter"><div className="container newsletter-inner"><div><p className="eyebrow"><span /> Keep in the loop</p><h2>Stay close to <em>what’s next.</em></h2></div><form onSubmit={async (e) => { e.preventDefault(); const formElement = e.currentTarget; const form = new FormData(formElement); await subscribeToNewsletter({ email: String(form.get('email')) }); formElement.reset(); }}><input name="email" required type="email" placeholder="Your email address" aria-label="Your email address" /><button type="submit">Stay updated</button></form></div></section>
 
 
 
@@ -606,7 +637,7 @@ function HomePage() {
 
 
 
-      <footer className="footer"><div className="container footer-grid"><div className="footer-brand"><Mark light /><p>Where the future of<br />Food begins.</p><span>© 2026 e360 Africa — Efficience 360 Technologies Ltd.</span></div><div className="footer-col"><b>Explore</b><button onClick={() => scrollTo('about')}>About</button><button onClick={() => scrollTo('programme')}>Programme</button><button onClick={() => scrollTo('speakers')}>Speakers</button><button onClick={() => scrollTo('battlefield')}>Battlefield</button></div><div className="footer-col"><b>Get involved</b><button onClick={() => scrollTo('tickets')}>Tickets</button><button onClick={() => scrollTo('sponsor')}>Sponsor</button><button onClick={() => scrollTo('exhibit')}>Exhibit</button><button onClick={() => navigate('/media')}>Media pass</button></div><div className="footer-col"><b>Connect</b><button onClick={() => navigate('/newsletter')}>Newsletter</button><button onClick={() => navigate('/contact')}>Contact</button><a href="https://www.instagram.com/agritechfest_/" target="_blank" rel="noreferrer">Instagram</a><a href="https://www.facebook.com/Agritechfest" target="_blank" rel="noreferrer">Facebook</a></div></div><div className="container footer-bottom"><span><button onClick={() => navigate('/privacy')}>Privacy</button> · <button onClick={() => navigate('/terms')}>Terms</button></span><span>Made for the people building tomorrow.</span><button onClick={() => scrollTo('top')}>Back to top</button></div></footer>
+      <footer className="footer"><div className="container footer-grid"><div className="footer-brand"><Mark light /><p>Where the future of<br />Food begins.</p></div><div className="footer-col"><b>Explore</b><button onClick={() => scrollTo('about')}>About</button><button onClick={() => scrollTo('programme')}>Programme</button><button onClick={() => scrollTo('speakers')}>Speakers</button><button onClick={() => scrollTo('battlefield')}>Battlefield</button></div><div className="footer-col"><b>Get involved</b><button onClick={() => scrollTo('tickets')}>Tickets</button><button onClick={() => scrollTo('sponsor')}>Sponsor</button><button onClick={() => scrollTo('exhibit')}>Exhibit</button><button onClick={() => navigate('/media')}>Media pass</button></div><div className="footer-col"><b>Connect</b><button onClick={() => navigate('/contact')}>Contact</button><a href="https://www.instagram.com/agritechfest_/" target="_blank" rel="noreferrer">Instagram</a><a href="https://www.facebook.com/Agritechfest" target="_blank" rel="noreferrer">Facebook</a></div></div><div className="container footer-bottom"><span><button onClick={() => navigate('/privacy')}>Privacy</button> · <button onClick={() => navigate('/terms')}>Terms</button></span><span>© 2026 e360 Africa — Efficience 360 Technologies Ltd.</span><button onClick={() => scrollTo('top')}>Back to top</button></div></footer>
 
     </div>
 
@@ -652,7 +683,24 @@ function AboutPage() {
 
 function ProgrammePage() {
 
-  const [activeDay, setActiveDay] = useState(0);
+  const readDay = () => {
+    const match = window.location.hash.match(/^#day-([123])$/);
+    return match ? Number(match[1]) - 1 : 0;
+  };
+  const [activeDay, setActiveDay] = useState(readDay);
+  useEffect(() => {
+    const sync = () => setActiveDay(readDay());
+    window.addEventListener('popstate', sync);
+    window.addEventListener('hashchange', sync);
+    return () => { window.removeEventListener('popstate', sync); window.removeEventListener('hashchange', sync); };
+  }, []);
+  const downloadProgramme = () => {
+    const content = ['AGRITECH FEST 2026 — EVENT PROGRAMME', ...programmeDays.flatMap(item => [item.tab, item.intro, ...item.sessions.map(([time, title, description]) => time + ' | ' + title + '\n' + description), ''])].join('\n\n');
+    const url = URL.createObjectURL(new Blob([content], { type: 'text/plain;charset=utf-8' }));
+    const link = document.createElement('a');
+    link.href = url; link.download = 'AgriTech-Fest-Event-Programme.txt'; link.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
 
   const day = programmeDays[activeDay];
 
@@ -676,13 +724,14 @@ function ProgrammePage() {
 
 
 
+        <button className="button button-dark programme-download" onClick={downloadProgramme}>Download Event Programme</button>
         <nav className="programme-day-switcher" aria-label="Choose programme day">
 
           {programmeDays.map((item, index) => {
 
             const [dayNumber, dayName] = item.tab.split(' · ');
 
-            return <button key={item.tab} className={activeDay === index ? 'active' : ''} onClick={() => setActiveDay(index)} aria-pressed={activeDay === index}><span>{dayNumber}</span><strong>{dayName}</strong><small>{item.sessions.length} sessions</small></button>;
+            return <button key={item.tab} className={activeDay === index ? 'active' : ''} onClick={() => { setActiveDay(index); navigate('/programme#day-' + (index + 1)); }} aria-pressed={activeDay === index}><span>{dayNumber}</span><strong>{dayName}</strong><small>{item.sessions.length} sessions</small></button>;
 
           })}
 
@@ -690,7 +739,7 @@ function ProgrammePage() {
 
 
 
-        <section className="programme-day-panel" aria-live="polite">
+        <section id={'day-' + (activeDay + 1)} key={activeDay} className="programme-day-panel" aria-live="polite">
 
           <aside className="programme-day-summary">
 
@@ -752,7 +801,7 @@ function SponsorPage() {
 
 
 
-        <form className="ticket-card" style={{ gap: 14 }} onSubmit={async (e) => { e.preventDefault(); const form = new FormData(e.currentTarget); await createEnquiry({ enquiry_type: 'sponsor', organisation: String(form.get('organisation')), name: String(form.get('name')), email: String(form.get('email')), phone: String(form.get('phone') || ''), message: String(form.get('message') || '') }); setSent(true); e.currentTarget.reset(); }}>
+        <form className="ticket-card" style={{ gap: 14 }} onSubmit={async (e) => { e.preventDefault(); const formElement = e.currentTarget; const form = new FormData(formElement); await createEnquiry({ enquiry_type: 'sponsor', organisation: String(form.get('organisation')), name: String(form.get('name')), email: String(form.get('email')), phone: String(form.get('phone') || ''), message: String(form.get('message') || '') }); setSent(true); formElement.reset(); }}>
 
           <span className="ticket-label">Sponsor enquiry</span>
 
@@ -798,6 +847,7 @@ function SponsorPage() {
 
 function TicketsPage() {
 
+  if (new URLSearchParams(window.location.search).has('reference') || new URLSearchParams(window.location.search).has('trxref')) return <div className="site-shell"><SiteHeader navigateTo={navigate} /><main className="ticket-success-page"><PaymentReturn /></main><SiteFooter navigateTo={navigate} /></div>;
   return <PageShell title="Get Your Ticket" subtitle="Ticketing"><TicketRegistration onComplete={() => navigate('/ticket-success')} /></PageShell>;
 
 }
@@ -946,26 +996,6 @@ function MysterySpeakerCard({ slot, index }: { slot: (typeof speakerRevealSlots)
 
 
 
-const exhibitors = [
-
-  { name: 'AgroDrone Systems', type: 'Technology', booth: 'A12', website: 'agrodrones.example', what: 'Drone mapping, crop monitoring and spraying.', category: 'technology' },
-
-  { name: 'FarmLink Equipment', type: 'Equipment', booth: 'B04', website: 'farmlink.example', what: 'Smallholder machinery and fabrication.', category: 'equipment' },
-
-  { name: 'SeedForward', type: 'Inputs', booth: 'C09', website: 'seedforward.example', what: 'Improved seeds and crop inputs.', category: 'inputs' },
-
-  { name: 'HarvestPay', type: 'Finance', booth: 'D02', website: 'harvestpay.example', what: 'Credit, insurance and payment tools.', category: 'finance' },
-
-  { name: 'ColdStore Pro', type: 'Processing', booth: 'E11', website: 'coldstore.example', what: 'Cold-chain and storage solutions.', category: 'processing' },
-
-  { name: 'SoilLab Africa', type: 'Research', booth: 'F07', website: 'soillab.example', what: 'Testing, diagnostics and advisory.', category: 'research' },
-
-  { name: 'GreenPulse Startup', type: 'Startup', booth: 'G15', website: 'greenpulse.example', what: 'Farm management software for youth-led farms.', category: 'startup' },
-
-];
-
-
-
 const faqItems = [
 
   ['What is AgriTech Fest?', 'AgriTech Fest is e360 Africa’s flagship agricultural technology conference, bringing together ambitious innovators, founders, investors, farmers, operators, researchers, policymakers, development organisations, students and technology enthusiasts to connect, collaborate and celebrate innovation shaping agriculture across Africa.'],
@@ -997,7 +1027,7 @@ function SpeakersPage() {
 
       <div className="speakers-page speaker-reveal-page">
 
-        <header className="speaker-reveal-page-hero"><span>Names dropping soon</span><h2>Can you guess who is taking <em>the stage?</em></h2><p>A bold mix of founders, farmers, investors, researchers, technologists and public leaders is coming to Kano. The first reveal is closer than you think.</p><button className="button button-lime" onClick={() => navigate('/newsletter')}>Be first to know</button></header>
+        <header className="speaker-reveal-page-hero"><span>Names dropping soon</span><h2>Can you guess who is taking <em>the stage?</em></h2><p>A bold mix of founders, farmers, investors, researchers, technologists and public leaders is coming to Kano. The first reveal is closer than you think.</p><InlineSignup /></header>
 
         <div className="speaker-reveal-grid speaker-reveal-grid-full">{speakerRevealSlots.map((slot, index) => <MysterySpeakerCard key={slot.clue} slot={slot} index={index} />)}</div>
 
@@ -1014,42 +1044,14 @@ function SpeakersPage() {
 
 
 function ExhibitPage() {
-
-  const [filter, setFilter] = useState('all');
-
-  const [selected, setSelected] = useState(exhibitors[0]);
-
-  const filtered = exhibitors.filter((item) => filter === 'all' || item.category === filter);
-
-  return (
-
-    <PageShell title="Exhibitor Directory" subtitle="Exhibition">
-
-      <div className="exhibitor-page">
-
-        <header className="exhibitor-page-intro"><div><span>{exhibitors.length} exhibiting organisations</span><h2>Discover the technology <em>on the floor.</em></h2></div><p>Explore the companies, tools and research being presented at AgriTech Fest, then select an exhibitor to see its booth and profile.</p></header>
-
-        <nav className="exhibitor-filters" aria-label="Filter exhibitors">{['all','technology','equipment','inputs','finance','processing','research','startup'].map(item => <button key={item} className={filter === item ? 'active' : ''} onClick={() => setFilter(item)} aria-pressed={filter === item}>{item}</button>)}</nav>
-
-        <div className="exhibitor-workspace">
-
-          <div className="exhibitor-list" aria-live="polite">{filtered.map((item,index) => <button key={item.name} className={`exhibitor-list-card ${selected.name === item.name ? 'selected' : ''}`} onClick={() => setSelected(item)}><span>{String(index + 1).padStart(2,'0')}</span><div><small>{item.type}</small><h3>{item.name}</h3><p>{item.what}</p></div><strong>Booth {item.booth}</strong></button>)}</div>
-
-          <aside className="exhibitor-profile"><span className="exhibitor-profile-label">Company profile</span><div className="exhibitor-profile-mark"><Sprout size={27} /></div><small>{selected.type}</small><h2>{selected.name}</h2><p>{selected.what}</p><div><span>Booth</span><strong>{selected.booth}</strong></div><div><span>Website</span><strong>{selected.website}</strong></div><button type="button">Visit website</button></aside>
-
-        </div>
-
-        <section className="exhibitor-cta"><div><span>Want to exhibit?</span><h2>Put your solution in front of the ecosystem.</h2></div><button className="button button-lime" onClick={() => navigate('/get-involved')}>Enquire to exhibit</button></section>
-
-      </div>
-
-    </PageShell>
-
-  );
-
+  return <PageShell title="Exhibit at AgriTech Fest" subtitle="">
+    <section className="exhibit-invitation">
+      <h2>Your innovation belongs <em>here.</em></h2>
+      <p>We are inviting exhibitors to bring agricultural technology, products and practical solutions to AgriTech Fest. The exhibitor lineup will be announced as registrations are confirmed.</p>
+      <button className="button button-lime" onClick={() => window.dispatchEvent(new CustomEvent('open-enquiry', { detail: 'exhibitor' }))}>Enquire to exhibit</button>
+    </section>
+  </PageShell>;
 }
-
-
 
 function SponsorsPartnersPage() {
 
@@ -1139,7 +1141,7 @@ function MediaPage() {
 
     <PageShell title="Media Accreditation" subtitle="Media">
 
-      <form className="ticket-card" style={{ gap: 14, maxWidth: 820 }} onSubmit={async (e) => { e.preventDefault(); const form = new FormData(e.currentTarget); const payload = Object.fromEntries(form.entries()); await createEnquiry({ enquiry_type: 'media', name: String(form.get('Name')), email: String(form.get('Email')), organisation: String(form.get('Media Organisation') || ''), phone: String(form.get('Phone') || ''), payload }); setSent(true); e.currentTarget.reset(); }}>
+      <form className="ticket-card" style={{ gap: 14, maxWidth: 820 }} onSubmit={async (e) => { e.preventDefault(); const formElement = e.currentTarget; const form = new FormData(formElement); const payload = Object.fromEntries(form.entries()); await createEnquiry({ enquiry_type: 'media', name: String(form.get('Name')), email: String(form.get('Email')), organisation: String(form.get('Media Organisation') || ''), phone: String(form.get('Phone') || ''), payload }); setSent(true); formElement.reset(); }}>
 
         {['Name', 'Media Organisation', 'Job Title', 'Email', 'Phone', 'Country', 'Publication / Platform', 'Website', 'Social profile', 'Coverage type', 'Estimated audience/reach', 'Previous work link', 'Days attending', 'Special interview requests'].map((label) => <input key={label} name={label} type={label === 'Email' ? 'email' : 'text'} required={label === 'Name' || label === 'Email'} placeholder={label} />)}
 
@@ -1167,7 +1169,7 @@ function GetInvolvedPage() {
 
     ['ENTERPRISES', 'Want your organisation represented?', 'Connect your organisation with the people, ideas and opportunities shaping African agriculture.', '/contact', 'Enterprise enquiry'],
 
-    ['EXHIBITORS', 'Put your technology in front of the ecosystem.', 'Demonstrate products, meet buyers and make your solution tangible for attendees.', '/exhibit', 'Enquire to exhibit'],
+    ['EXHIBITORS', 'Put your technology in front of the ecosystem.', 'Demonstrate products, meet buyers and make your solution tangible for attendees.', '/get-involved#exhibit-enquiry', 'Enquire to exhibit'],
 
     ['SPONSORS', 'Put your brand behind the future.', 'Build visibility and meaningful relationships across the agricultural innovation ecosystem.', '/sponsors-partners', 'Become a sponsor'],
 
@@ -1197,7 +1199,7 @@ function GetInvolvedPage() {
 
               <small>{title}</small><h3>{heading}</h3><p>{description}</p>
 
-              <button onClick={() => navigate(path)}>{cta}</button>
+              <button onClick={() => title === 'EXHIBITORS' || title === 'ENTERPRISES' ? window.dispatchEvent(new CustomEvent('open-enquiry', { detail: title === 'EXHIBITORS' ? 'exhibitor' : 'enterprise' })) : navigate(path)}>{cta}</button>
 
             </article>
 
@@ -1208,6 +1210,7 @@ function GetInvolvedPage() {
         <section className="involved-contact"><div><span>Not sure where you fit?</span><h2>Let’s find the right way to work together.</h2></div><button className="button button-lime" onClick={() => navigate('/contact')}>Contact the team</button></section>
 
       </div>
+
 
     </PageShell>
 
@@ -1239,147 +1242,13 @@ function FaqPage() {
 
 
 
-function NewsletterPage() {
-
-  const [subscribed, setSubscribed] = useState(false);
-
-
-
-  return (
-
-    <PageShell title="Newsletter" subtitle="">
-
-      <div className="newsletter-page">
-
-        <section className="newsletter-page-hero">
-
-          <div className="newsletter-page-copy">
-
-            <span className="newsletter-page-status"><i /> The signal from AgriTech Fest</span>
-
-            <h2>Know what’s next <em>before everyone else.</em></h2>
-
-            <p>Speaker reveals, programme drops, Battlefield news and the opportunities worth showing up for—sent with purpose, never noise.</p>
-
-            <div className="newsletter-page-promise">
-
-              <div><strong>01</strong><span>Speaker reveals</span></div>
-
-              <div><strong>02</strong><span>Programme updates</span></div>
-
-              <div><strong>03</strong><span>Access alerts</span></div>
-
-            </div>
-
-          </div>
-
-
-
-          <div className="newsletter-signup-card">
-
-            {subscribed ? (
-
-              <div className="newsletter-success" role="status">
-
-                <span>You're on the list</span>
-
-                <h3>Welcome to the inside track.</h3>
-
-                <p>We’ll send the next AgriTech Fest update straight to your inbox.</p>
-
-                <button type="button" onClick={() => setSubscribed(false)}>Add another email</button>
-
-              </div>
-
-            ) : (
-
-              <>
-
-                <header><span>Join the list</span><h3>Stay close to the Fest.</h3><p>Tell us where to reach you. The last two fields are optional.</p></header>
-
-                <form className="newsletter-page-form" onSubmit={async (event) => {
-
-                  event.preventDefault();
-
-                  const formElement = event.currentTarget;
-
-                  const form = new FormData(formElement);
-
-                  await subscribeToNewsletter({
-
-                    first_name: String(form.get('first_name') || ''),
-
-                    email: String(form.get('email')),
-
-                    organisation: String(form.get('organisation') || ''),
-
-                    job_title: String(form.get('job_title') || ''),
-
-                  });
-
-                  formElement.reset();
-
-                  setSubscribed(true);
-
-                }}>
-
-                  <label><span>First name</span><input name="first_name" autoComplete="given-name" placeholder="What should we call you?" /></label>
-
-                  <label><span>Email address <b>*</b></span><input name="email" required type="email" autoComplete="email" placeholder="you@example.com" /></label>
-
-                  <label><span>Organisation or school <small>Optional</small></span><input name="organisation" autoComplete="organization" placeholder="Where are you coming from?" /></label>
-
-                  <label><span>Role or field of interest <small>Optional</small></span><input name="job_title" autoComplete="organization-title" placeholder="Student, farmer, founder..." /></label>
-
-                  <button type="submit">Keep me in the loop <span>→</span></button>
-
-                  <p>By subscribing, you agree to receive event updates. Unsubscribe whenever you like.</p>
-
-                </form>
-
-              </>
-
-            )}
-
-          </div>
-
-        </section>
-
-
-
-        <section className="newsletter-preview">
-
-          <div><span>In your inbox</span><h2>Useful updates.<br />No filler.</h2></div>
-
-          <div className="newsletter-preview-list">
-
-            <article><span>Reveals</span><strong>The names taking the stage</strong><p>Meet speakers as soon as they are announced.</p></article>
-
-            <article><span>Plan</span><strong>The moments worth your time</strong><p>Programme highlights and timely schedule updates.</p></article>
-
-            <article><span>Access</span><strong>The opportunities with a deadline</strong><p>Applications, tickets and limited-capacity experiences.</p></article>
-
-          </div>
-
-        </section>
-
-      </div>
-
-    </PageShell>
-
-  );
-
-}
-
-
-
 function ContactPage() {
 
   return (
 
     <PageShell title="Contact" subtitle="Connect with the team">
 
-      <form className="ticket-card" style={{ gap: 14, maxWidth: 760 }} onSubmit={async (e) => { e.preventDefault(); const form = new FormData(e.currentTarget); await createEnquiry({ enquiry_type: 'contact', name: String(form.get('Name')), email: String(form.get('Email')), phone: String(form.get('Phone') || ''), organisation: String(form.get('Organisation') || ''), message: String(form.get('Message') || '') }); e.currentTarget.reset(); }}>
+      <form className="ticket-card" style={{ gap: 14, maxWidth: 760 }} onSubmit={async (e) => { e.preventDefault(); const formElement = e.currentTarget; const form = new FormData(formElement); await createEnquiry({ enquiry_type: 'contact', name: String(form.get('Name')), email: String(form.get('Email')), phone: String(form.get('Phone') || ''), organisation: String(form.get('Organisation') || ''), message: String(form.get('Message') || '') }); formElement.reset(); }}>
 
         {['Name', 'Email', 'Phone', 'Organisation', 'Message'].map((label) => label === 'Message' ? <textarea key={label} name={label} rows={5} placeholder={label} /> : <input key={label} name={label} type={label === 'Email' ? 'email' : 'text'} required={label === 'Name' || label === 'Email'} placeholder={label} />)}
 
@@ -1498,7 +1367,7 @@ function App() {
 
       '/speakers': 'Speakers & Keynotes — AgriTech Fest 2026',
 
-      '/exhibit': 'Exhibitor Directory — AgriTech Fest 2026',
+      '/exhibit': 'Exhibit at AgriTech Fest 2026',
 
       '/sponsors-partners': 'Sponsors & Partners — AgriTech Fest 2026',
 
@@ -1518,7 +1387,7 @@ function App() {
 
       '/faq': 'Frequently Asked Questions — AgriTech Fest 2026',
 
-      '/newsletter': 'Newsletter — AgriTech Fest 2026',
+
 
       '/contact': 'Contact — AgriTech Fest 2026',
 
@@ -1586,7 +1455,7 @@ function App() {
 
   if (location.pathname === '/faq') return <FaqPage />;
 
-  if (location.pathname === '/newsletter') return <NewsletterPage />;
+
 
   if (location.pathname === '/contact') return <ContactPage />;
 

@@ -1,0 +1,11 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import ts from 'typescript';
+const code = ts.transpileModule(readFileSync(new URL('../src/lib/paymentErrors.ts', import.meta.url),'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.ES2020}}).outputText;
+const { paymentErrorMessage } = await import(`data:text/javascript;base64,${Buffer.from(code).toString('base64')}`);
+test('fetch errors with Error context do not call json', async()=>{assert.match(await paymentErrorMessage({context:new TypeError('Failed to fetch')}),/could not connect/)});
+test('missing context and non-callable json are handled',async()=>{for(const error of [null,{}, {context:'network'}, {context:{json:'not a function'}}]) assert.match(await paymentErrorMessage(error),/could not connect/)});
+test('HTTP JSON error returns server explanation',async()=>{assert.equal(await paymentErrorMessage({context:Response.json({error:'Test checkout is not configured yet.'})}),'Test checkout is not configured yet.')});
+test('non-JSON and synchronous parser failures fall back',async()=>{for(const context of [new Response('Bad Gateway'),{json(){throw new Error('broken')}}]) assert.match(await paymentErrorMessage({context}),/could not connect/)});
+test('unexpected server error payload is not rendered',async()=>{assert.match(await paymentErrorMessage({context:Response.json({error:{internal:'details'}})}),/could not connect/)});

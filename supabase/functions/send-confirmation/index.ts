@@ -17,7 +17,7 @@ function formatDate(value: string) {
 }
 
 function emailFrame(content: string) {
-  return `<!doctype html><html><body style="margin:0;background:#eef2ed;font-family:Arial,sans-serif;color:#07131f"><table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td style="padding:32px 16px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:620px;margin:auto;background:#fff;border-radius:22px;overflow:hidden"><tr><td style="padding:28px 32px;background:#07131f;color:#fff"><div style="font-size:13px;font-weight:800;letter-spacing:2px;color:#baff27">AGRITECH FEST 2026</div><div style="margin-top:7px;font-size:13px;color:#b9c4bc">Kano, Nigeria · 12–14 November 2026</div></td></tr><tr><td style="padding:36px 32px">${content}</td></tr><tr><td style="padding:22px 32px;background:#f4f7f2;color:#68756c;font-size:12px;line-height:1.6">AgriTech Fest 2026 · e360 Africa<br>Questions? Reply to this email or contact info@e360.africa.</td></tr></table></td></tr></table></body></html>`;
+  return `<!doctype html><html><body style="margin:0;background:#eef2ed;font-family:Arial,sans-serif;color:#07131f"><table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td style="padding:32px 16px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:620px;margin:auto;background:#fff;border-radius:22px;overflow:hidden"><tr><td style="padding:28px 32px;background:#07131f;color:#fff"><div style="font-size:13px;font-weight:800;letter-spacing:2px;color:#baff27">AGRITECH FEST 2026</div><div style="margin-top:7px;font-size:13px;color:#b9c4bc">Kano, Nigeria · 17–19 November 2026</div></td></tr><tr><td style="padding:36px 32px">${content}</td></tr><tr><td style="padding:22px 32px;background:#f4f7f2;color:#68756c;font-size:12px;line-height:1.6">AgriTech Fest 2026 · e360 Africa<br>Questions? Reply to this email or contact info@e360.africa.</td></tr></table></td></tr></table></body></html>`;
 }
 
 function ticketEmail(ticket: Record<string, unknown>) {
@@ -64,6 +64,8 @@ Deno.serve(async request => {
     const { data: record, error: recordError } = await admin.from(table).select('*').eq(key, code).single();
     if (recordError || !record) return Response.json({ error: 'Registration not found' }, { status: 404, headers: corsHeaders });
 
+    if (kind === 'ticket' && (record.status === 'pending' || record.status === 'cancelled')) return Response.json({ error: 'Ticket is not confirmed' }, { status: 409, headers: corsHeaders });
+    if (kind === 'ticket' && record.payment_domain === 'test') return Response.json({ sent: false, test: true }, { headers: corsHeaders });
     const email = kind === 'ticket' ? ticketEmail(record) : battlefieldEmail(record);
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',

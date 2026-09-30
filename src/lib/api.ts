@@ -1,3 +1,4 @@
+import { paymentErrorMessage } from './paymentErrors';
 import { supabase } from './supabase';
 
 function client() {
@@ -11,6 +12,7 @@ async function sendConfirmation(kind: 'ticket' | 'battlefield', code: string) {
 }
 
 export async function createTicket(input: { full_name: string; email: string; phone?: string; ticket_type: string; attendance_date: string; accessibility_notes?: string; role_designation?: string; looking_forward_to?: string; heard_about?: string }) {
+  if (input.ticket_type !== 'Regular pass') throw new Error('Premium passes must use secure checkout.');
   const ticket_code = `ATF-${crypto.randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()}`;
   const { error } = await client().from('tickets').insert({ ...input, ticket_code });
   if (error) throw error;
@@ -114,11 +116,11 @@ export async function addAdminRecord(section: AdminSectionKey, title: string, su
   const key = crypto.randomUUID().slice(0, 8);
   const payloads: Record<AdminSectionKey, Record<string, unknown>> = {
     pages: { slug: `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${key}`, title, eyebrow: subtitle, status: 'draft' },
-    programme: { day_number: Math.floor(Date.now() / 1000) % 30000, title, theme: subtitle, event_date: '2026-11-14', status: 'draft' },
+    programme: { day_number: Math.floor(Date.now() / 1000) % 30000, title, theme: subtitle, event_date: '2026-11-19', status: 'draft' },
     speakers: { name: title, job_title: subtitle, status: 'draft' },
     exhibitors: { name: title, category: subtitle, review_status: 'pending', is_public: false },
     partners: { name: title, tier: subtitle || 'Partner', status: 'draft' },
-    tickets: { full_name: title, email: subtitle, ticket_type: 'Regular pass', attendance_date: '2026-11-12', ticket_code: `ATF-${key.toUpperCase()}`, status: 'pending' },
+    tickets: { full_name: title, email: subtitle, ticket_type: 'Regular pass', attendance_date: '2026-11-17', ticket_code: `ATF-${key.toUpperCase()}`, status: 'pending' },
     battlefield: { team_name: title, email: subtitle, review_status: 'pending' },
     inbox: { enquiry_type: 'contact', name: title, email: subtitle, status: 'pending' },
     newsletter: { subject: title, preview_text: subtitle, status: 'draft' },
@@ -138,4 +140,13 @@ export async function updateAdminRecordStatus(section: AdminSectionKey, id: stri
   if (section === 'tickets') value = status === 'Approved' ? 'confirmed' : status === 'Pending' ? 'pending' : 'cancelled';
   const { error } = await client().from(sectionTables[section]).update({ [statusColumn]: value }).eq('id', id);
   if (error) throw error;
+}
+
+export async function premiumPayment(body: Record<string, unknown>): Promise<{ authorization_url?: string; reference?: string; ticket?: import('../components/TicketPass').TicketPassData; test?: boolean }> {
+  const { data, error } = await client().functions.invoke('paystack', { body });
+  if (error) {
+    throw new Error(await paymentErrorMessage(error));
+  }
+  if (data?.error) throw new Error(data.error);
+  return data;
 }

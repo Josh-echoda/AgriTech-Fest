@@ -1,6 +1,6 @@
 import { useRef, useState, type FormEvent } from 'react';
 import { Check } from 'lucide-react';
-import { createTicket } from '../lib/api';
+import { createTicket, premiumPayment } from '../lib/api';
 import './ticket-registration.css';
 const passes = [
   {
@@ -29,10 +29,19 @@ export default function TicketRegistration({ onComplete }: { onComplete: () => v
     const name = String(data.get('name') || '').trim();
     const email = String(data.get('email') || '').trim();
     const day = String(data.get('day') || '');
+    if (!String(data.get('phone') || '').trim()) { setError('Please enter your phone number.'); return; }
     if (!name) { setError('Please enter your full name.'); return; }
     locked.current = true; setBusy(true); setError('');
     try {
-      const saved = await createTicket({ full_name: name, email, phone: String(data.get('phone') || '').trim(), ticket_type: pass.name, attendance_date: day, accessibility_notes: String(data.get('notes') || '').trim(), role_designation: String(data.get('role') || ''), looking_forward_to: String(data.get('looking_forward_to') || ''), heard_about: String(data.get('heard_about') || '') });
+      const input = { full_name: name, email, phone: String(data.get('phone') || '').trim(), ticket_type: pass.name, attendance_date: day, accessibility_notes: String(data.get('notes') || '').trim(), role_designation: String(data.get('role') || ''), looking_forward_to: String(data.get('looking_forward_to') || ''), heard_about: String(data.get('heard_about') || '') };
+      if (pass.name === 'Premium pass') {
+        const checkout = await premiumPayment({ action: 'initialize', input });
+        if (!checkout.authorization_url || !checkout.reference || new URL(checkout.authorization_url).hostname !== 'checkout.paystack.com') throw new Error('Unable to open secure checkout. Please try again.');
+        try { sessionStorage.setItem('agritech-payment-reference', checkout.reference); } catch { /* Checkout still works without storage. */ }
+        window.location.assign(checkout.authorization_url);
+        return;
+      }
+      const saved = await createTicket(input);
       try { localStorage.setItem('agritech-ticket', JSON.stringify({ id: saved.ticket_code, name, email, type: pass.name, day })); }
       catch { setError(`Registration saved. Keep your reference ${saved.ticket_code} and contact info@e360.africa for your pass. Please do not register again.`); return; }
       onComplete();
@@ -43,10 +52,11 @@ export default function TicketRegistration({ onComplete }: { onComplete: () => v
   }
   return <form className="atf-registration" id="purchase" onSubmit={submit}>
     <header><span>BE PART OF AGRITECH FEST 2026</span><h2>Your next connection starts here.</h2><p>Students, farmers, founders, professionals and curious minds — everyone has a place. Fields marked * are required.</p></header>
+    <PendingPayment />
     <fieldset disabled={busy}><legend>Your details</legend>
       <label htmlFor="ticket-name">Full name *</label><input id="ticket-name" name="name" required autoComplete="name" placeholder="Enter your full name" />
       <label htmlFor="ticket-email">Email address *</label><input id="ticket-email" name="email" required type="email" autoComplete="email" aria-describedby="ticket-email-help" placeholder="you@example.com" /><small id="ticket-email-help">Use a personal, student or work email you can access.</small>
-      <label htmlFor="ticket-phone">Phone number <small>(optional)</small></label><input id="ticket-phone" name="phone" type="tel" autoComplete="tel" placeholder="e.g. 0801 234 5678" />
+      <label htmlFor="ticket-phone">Phone number * <small>(Preferably WhatsApp number)</small></label><input id="ticket-phone" name="phone" required type="tel" autoComplete="tel" placeholder="e.g. 0801 234 5678" />
       <label htmlFor="ticket-role">Role / Designation *</label>
       <select id="ticket-role" name="role" required defaultValue=""><option value="" disabled>Select your role</option>{['Student', 'Farmer', 'Founder / Entrepreneur', 'Agricultural professional', 'Researcher / Educator', 'Investor', 'Government / Development organisation', 'Technology professional', 'Other'].map(value => <option key={value}>{value}</option>)}</select>
     </fieldset>
@@ -58,7 +68,7 @@ export default function TicketRegistration({ onComplete }: { onComplete: () => v
         <ul>{pass.benefits.map(benefit => <li key={benefit}><Check size={17} aria-hidden="true" /><span>{benefit}</span></li>)}</ul>
         <small>{pass.name === 'Premium pass' ? 'Regular gets you into the room. Premium gets you closer to the people you came to meet.' : 'No payment is required for the Regular pass.'}</small>
       </section>}</div>
-      <label htmlFor="attendance-day">Attendance day *</label><select id="attendance-day" name="day" defaultValue="" required><option value="" disabled>Select one festival day</option><option value="2026-11-12">Day 1 - Cultivate</option><option value="2026-11-13">Day 2 - Engineer</option><option value="2026-11-14">Day 3 - Scale</option></select>
+      <label htmlFor="attendance-day">Attendance day *</label><select id="attendance-day" name="day" defaultValue="" required><option value="" disabled>Select one festival day</option><option value="2026-11-17">Day 1 - Cultivate</option><option value="2026-11-18">Day 2 - Engineer</option><option value="2026-11-19">Day 3 - Scale</option></select>
       <label htmlFor="ticket-interests">What are you looking forward to? *</label>
       <select id="ticket-interests" name="looking_forward_to" required defaultValue=""><option value="" disabled>Select your main interest</option>{['Learning from speakers and panels', 'Networking and meeting collaborators', 'Technology demonstrations and exhibitions', 'AgriTech Battlefield', 'Investment and business opportunities', 'Career and learning opportunities', 'All of the above', 'Other'].map(value => <option key={value}>{value}</option>)}</select>
       <label htmlFor="ticket-source">How did you hear about AgriTech Fest? *</label>
@@ -66,7 +76,14 @@ export default function TicketRegistration({ onComplete }: { onComplete: () => v
       <label htmlFor="ticket-notes">Accessibility or support needs <small>(optional)</small></label><textarea id="ticket-notes" name="notes" rows={3} placeholder="Tell us how we can help you take part comfortably." />
     </fieldset>
     {error && <p className="atf-registration-error" role="alert">{error}</p>}
-    <button className="atf-registration-submit" type="submit" disabled={busy || locked.current}>{busy ? 'Creating your pass…' : 'Register for AgriTech Fest'}</button>
-    <p className="atf-registration-footnote">Your QR pass will appear after registration. Keep it for event-day check-in.</p>
+    <button className="atf-registration-submit" type="submit" disabled={busy || locked.current}>{busy ? 'Please wait…' : selected === 'Premium pass' ? 'Pay securely — ₦50,000' : 'Register for free'}</button>
+    <p className="atf-registration-footnote">{selected === 'Premium pass' ? 'Secure payment powered by Paystack. Your pass is issued only after payment is verified.' : 'Your QR pass will appear after registration. Keep it for event-day check-in.'}</p>
   </form>;
+}
+
+function PendingPayment() {
+  let reference = '';
+  try { reference = sessionStorage.getItem('agritech-payment-reference') || ''; } catch { /* Optional recovery hint. */ }
+  if (!reference) return null;
+  return <p className="atf-registration-footnote">Already attempted payment? <a href={`/tickets?reference=${encodeURIComponent(reference)}`}>Check your previous payment</a> before starting again.</p>;
 }

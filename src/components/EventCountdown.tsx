@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './event-countdown.css';
 
-const EVENT_START = new Date('2026-11-12T09:00:00+01:00').getTime();
+const EVENT_START = new Date('2026-11-17T09:00:00+01:00').getTime();
 
 function remainingTime() {
   const distance = Math.max(0, EVENT_START - Date.now());

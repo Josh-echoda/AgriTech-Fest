@@ -1,3 +1,4 @@
+import Submissions from './admin/Submissions';
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import {
@@ -8,6 +9,7 @@ import {
 } from 'lucide-react';
 import './admin.css';
 import './admin-mobile.css';
+import './admin-desktop.css';
 import { supabase } from './lib/supabase';
 import { addAdminRecord, deleteAdminRecord, loadAdminSection, updateAdminRecordStatus, type AdminSectionKey } from './lib/api';
 import CheckInPanel from './admin/CheckInPanel';
@@ -41,9 +43,9 @@ const initialRows: Record<Exclude<AdminSection, 'overview' | 'settings' | 'check
     { id: 'p4', title: 'Privacy & terms', subtitle: 'Legal information', meta: 'Needs review', status: 'Draft' },
   ],
   programme: [
-    { id: 'd1', title: 'Day 01 · Cultivate', subtitle: 'Youth · Innovation · Education', meta: '10 sessions · Dambatta Campus', status: 'Published', tag: '12 Nov' },
-    { id: 'd2', title: 'Day 02 · Engineer', subtitle: 'Farmers · Research · Technology', meta: '10 sessions · BUK New Site', status: 'Published', tag: '13 Nov' },
-    { id: 'd3', title: 'Day 03 · Scale', subtitle: 'Policy · Investment · Partnership', meta: '11 sessions · Venue pending', status: 'Draft', tag: '14 Nov' },
+    { id: 'd1', title: 'Day 01 · Cultivate', subtitle: 'Youth · Innovation · Education', meta: '10 sessions · Dambatta Campus', status: 'Published', tag: '17 Nov' },
+    { id: 'd2', title: 'Day 02 · Engineer', subtitle: 'Farmers · Research · Technology', meta: '10 sessions · BUK New Site', status: 'Published', tag: '18 Nov' },
+    { id: 'd3', title: 'Day 03 · Scale', subtitle: 'Policy · Investment · Partnership', meta: '11 sessions · Meena Event Center', status: 'Draft', tag: '19 Nov' },
   ],
   speakers: [
     { id: 's1', title: 'Dr. Amina Bello', subtitle: 'Keynote · Federal Ministry of Agriculture', meta: 'Opening keynote', status: 'Published' },
@@ -83,7 +85,7 @@ const initialRows: Record<Exclude<AdminSection, 'overview' | 'settings' | 'check
 };
 
 const titles: Record<AdminSection, [string, string]> = {
-  overview: ['Good evening, Admin', 'Here is what is happening across AgriTech Fest.'],
+  overview: ['Welcome back, Admin', 'Here is what is happening across AgriTech Fest.'],
   pages: ['Pages & content', 'Manage the words and sections visitors see across the website.'],
   programme: ['Programme', 'Build the three-day schedule, sessions and venues.'],
   speakers: ['Speakers', 'Manage profiles, roles and programme appearances.'],
@@ -92,7 +94,7 @@ const titles: Record<AdminSection, [string, string]> = {
   tickets: ['Tickets', 'Track registrations, passes and event check-in.'],
   checkin: ['Registration desk', 'Scan passes, verify attendees and manage the live guest list.'],
   battlefield: ['Battlefield', 'Review applications and move teams through selection.'],
-  inbox: ['Inbox', 'Handle contact, sponsor and media enquiries.'],
+  inbox: ['Inbox', 'Manage contact, enterprise, exhibition, sponsor, media and mixer enquiries.'],
   newsletter: ['Newsletter', 'Manage subscribers and event communications.'],
   team: ['Team & permissions', 'Give each event team member access to exactly what they need.'],
   settings: ['Site settings', 'Control event details, visibility and publishing.'],
@@ -170,13 +172,15 @@ function AdminDashboard({ session, profile }: { session: Session; profile: Acces
   const visibleNav = nav.filter((item) => canAccess(item.section));
 
   useEffect(() => {
-    if (section === 'overview' || section === 'settings' || section === 'checkin' || section === 'team') return;
+    if (section === 'overview' || section === 'settings' || section === 'checkin' || section === 'team' || ['tickets', 'battlefield', 'inbox', 'newsletter'].includes(section)) return;
     loadAdminSection(section as AdminSectionKey).then((data) => setRows((current) => ({ ...current, [section]: data }))).catch((error) => setToast(`Could not load records: ${error.message}`));
   }, [section]);
   useEffect(() => { if (!toast) return; const timer = setTimeout(() => setToast(''), 2600); return () => clearTimeout(timer); }, [toast]);
 
-  const activeRows = section !== 'overview' && section !== 'settings' && section !== 'checkin' && section !== 'team' ? rows[section] : [];
-  const filtered = useMemo(() => activeRows.filter((row) => `${row.title} ${row.subtitle} ${row.meta}`.toLowerCase().includes(query.toLowerCase())), [activeRows, query]);
+  const filtered = useMemo(() => {
+    const activeRows = section !== 'overview' && section !== 'settings' && section !== 'checkin' && section !== 'team' ? rows[section] : [];
+    return activeRows.filter((row) => `${row.title} ${row.subtitle} ${row.meta}`.toLowerCase().includes(query.toLowerCase()));
+  }, [rows, section, query]);
   const go = (next: AdminSection) => { setSection(next); setQuery(''); setMenuOpen(false); };
   const saveNew = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -199,7 +203,7 @@ function AdminDashboard({ session, profile }: { session: Session; profile: Acces
     <div className="admin-shell">
       <aside className={`admin-sidebar ${menuOpen ? 'open' : ''}`}>
         <div className="admin-brand"><img src="/assets/images/LOGO_BRIGHT_.png" alt="AgriTech Fest" /><button onClick={() => setMenuOpen(false)}><X /></button></div>
-        <div className="admin-event"><span>Current event</span><strong>AgriTech Fest 2026</strong><small>12–14 November · Kano</small></div>
+        <div className="admin-event"><span>Current event</span><strong>AgriTech Fest 2026</strong><small>17–19 November · Kano</small></div>
         <nav>{visibleNav.map(({ section: item, label, icon: Icon, badge }) => <button className={section === item ? 'active' : ''} key={item} onClick={() => go(item)}><Icon size={18} /><span>{label}</span>{badge && <b>{badge}</b>}</button>)}</nav>
         <button className="admin-user" onClick={() => supabase?.auth.signOut()} title="Sign out"><div>{profile.display_name.slice(0,2).toUpperCase()}</div><span><strong>{profile.display_name}</strong><small>{session.user.email}</small></span></button>
       </aside>
@@ -222,13 +226,14 @@ function AdminDashboard({ session, profile }: { session: Session; profile: Acces
         </header>
 
         <div className="admin-content">
-          <div className="admin-heading"><div><p>ADMIN CONSOLE / {section.toUpperCase()}</p><h1>{titles[section][0]}</h1><span>{titles[section][1]}</span></div>{!['overview','settings','checkin','team'].includes(section) && <button className="admin-primary" onClick={() => setModal(true)}><Plus size={17} /> Add new</button>}</div>
+          <div className="admin-heading"><div><p>ADMIN CONSOLE / {section.toUpperCase()}</p><h1>{titles[section][0]}</h1><span>{titles[section][1]}</span></div>{!['overview','settings','checkin','team','tickets','battlefield','inbox','newsletter'].includes(section) && <button className="admin-primary" onClick={() => setModal(true)}><Plus size={17} /> Add new</button>}</div>
 
           {section === 'overview' && <Overview onNavigate={go} />}
+          {(section === 'battlefield' || section === 'inbox' || section === 'newsletter' || section === 'tickets') && <Submissions key={section} section={section} query={query} />}
           {section === 'checkin' && <CheckInPanel />}
           {section === 'team' && <TeamPanel />}
           {section === 'settings' && <SettingsPanel notify={setToast} />}
-          {!['overview','settings','checkin','team'].includes(section) && <DataPanel section={section} rows={filtered} remove={remove} update={async (id, status) => { try { await updateAdminRecordStatus(section as AdminSectionKey, id, status); setRows((current) => ({ ...current, [section]: current[section as AdminSectionKey].map((row: RecordRow) => row.id === id ? { ...row, status } : row) })); setToast(`Status changed to ${status}`); } catch (error) { setToast(`Could not update status: ${(error as Error).message}`); } }} />}
+          {!['overview','settings','checkin','team','tickets','battlefield','inbox','newsletter'].includes(section) && <DataPanel section={section} rows={filtered} remove={remove} update={async (id, status) => { try { await updateAdminRecordStatus(section as AdminSectionKey, id, status); setRows((current) => ({ ...current, [section]: current[section as AdminSectionKey].map((row: RecordRow) => row.id === id ? { ...row, status } : row) })); setToast(`Status changed to ${status}`); } catch (error) { setToast(`Could not update status: ${(error as Error).message}`); } }} />}
         </div>
       </main>
 
@@ -261,7 +266,7 @@ function Overview({ onNavigate }: { onNavigate: (section: AdminSection) => void 
     ['76%', 'Event readiness', 'Launch checklist', Gauge, 'programme'],
   ] as const;
   return <>
-    <section className="admin-stats">{stats.map(([value, label, note, Icon, target]) => <button className={label === 'New enquiries' || label === 'Event readiness' ? 'mobile-only-stat' : ''} key={label} onClick={() => onNavigate(target)}><div><Icon size={20} /></div><strong>{value}</strong><span>{label}</span><small>{note}</small></button>)}</section>
+    <p className="admin-preview-notice">Dashboard preview · Summary figures below are sample data. Open a section to manage live records.</p><section className="admin-stats">{stats.map(([value, label, note, Icon, target]) => <button className={label === 'New enquiries' || label === 'Event readiness' ? 'mobile-only-stat' : ''} key={label} onClick={() => onNavigate(target)}><div><Icon size={20} /></div><strong>{value}</strong><span>{label}</span><small>{note}</small></button>)}</section>
     <section className="admin-overview-grid">
       <article className="admin-card admin-sales"><header><div><span>REGISTRATION</span><h2>Ticket activity</h2></div><select aria-label="Chart range"><option>Last 7 days</option><option>Last 30 days</option></select></header><div className="chart-wrap"><div className="chart-y"><span>300</span><span>200</span><span>100</span><span>0</span></div><div className="bar-chart">{[38, 52, 47, 68, 58, 84, 73].map((height, i) => <div key={i}><i style={{ height: `${height}%` }} /><span>{['Thu','Fri','Sat','Sun','Mon','Tue','Wed'][i]}</span></div>)}</div></div></article>
       <article className="admin-card admin-progress"><header><div><span>EVENT READINESS</span><h2>Launch checklist</h2></div><b>76%</b></header><div className="progress-track"><i /></div>{[['Programme published', true], ['Speaker profiles', true], ['Venue confirmation', false], ['Sponsor assets', true], ['Check-in team briefing', false]].map(([label, done]) => <div className="check-row" key={String(label)}><i className={done ? 'done' : ''}>{done && <Check size={12} />}</i><span>{label}</span></div>)}</article>
@@ -275,7 +280,7 @@ function DataPanel({ section, rows, remove, update }: { section: AdminSection; r
 }
 
 function SettingsPanel({ notify }: { notify: (message: string) => void }) {
-  return <div className="settings-grid"><section className="admin-card settings-form"><header><div><span>EVENT INFORMATION</span><h2>Core details</h2></div></header><label>Event name<input defaultValue="AgriTech Fest 2026" /></label><div className="field-pair"><label>Start date<input type="date" defaultValue="2026-11-12" /></label><label>End date<input type="date" defaultValue="2026-11-14" /></label></div><label>Location<input defaultValue="Kano, Nigeria" /></label><label>Contact email<input type="email" defaultValue="info@e360.africa" /></label><button className="admin-primary" onClick={() => notify('Event settings saved')}>Save changes</button></section><section><SiteMaintenanceControl /><article className="admin-card settings-mini"><span>REGISTRATION CAPACITY</span><strong>2,148 <small>/ 3,000</small></strong><div className="progress-track"><i style={{ width: '71.6%' }} /></div><p>852 passes remaining</p></article></section></div>;
+  return <div className="settings-grid"><section className="admin-card settings-form"><header><div><span>EVENT INFORMATION</span><h2>Core details</h2></div></header><label>Event name<input defaultValue="AgriTech Fest 2026" /></label><div className="field-pair"><label>Start date<input type="date" defaultValue="2026-11-17" /></label><label>End date<input type="date" defaultValue="2026-11-19" /></label></div><label>Location<input defaultValue="Kano, Nigeria" /></label><label>Contact email<input type="email" defaultValue="info@e360.africa" /></label><button className="admin-primary" onClick={() => notify('Event settings saved')}>Save changes</button></section><section><SiteMaintenanceControl /><article className="admin-card settings-mini"><span>REGISTRATION CAPACITY</span><strong>2,148 <small>/ 3,000</small></strong><div className="progress-track"><i style={{ width: '71.6%' }} /></div><p>852 passes remaining</p></article></section></div>;
 }
 
 
