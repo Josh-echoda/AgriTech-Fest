@@ -13,6 +13,10 @@ async function sendConfirmation(kind: 'ticket' | 'battlefield', code: string) {
 
 export async function createTicket(input: { full_name: string; email: string; phone?: string; ticket_type: string; attendance_date: string; attendance_dates?: string[]; accessibility_notes?: string; role_designation?: string; looking_forward_to?: string; heard_about?: string }) {
   if (input.ticket_type !== 'Regular pass') throw new Error('Premium passes must use secure checkout.');
+  const allowedDays = new Set(['2026-11-17', '2026-11-18', '2026-11-19']);
+  const attendanceDays = [...new Set(input.attendance_dates || [input.attendance_date])].sort();
+  if (attendanceDays.length < 1 || attendanceDays.length > 2 || attendanceDays.some(day => !allowedDays.has(day))) throw new Error('Select one or two valid festival days for the Regular Pass.');
+  input = { ...input, attendance_date: attendanceDays[0], attendance_dates: attendanceDays };
   const ticket_code = `ATF-${crypto.randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()}`;
   const { error } = await client().from('tickets').insert({ ...input, ticket_code });
   if (error) throw error;

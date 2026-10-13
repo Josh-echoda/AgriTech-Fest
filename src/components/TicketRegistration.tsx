@@ -7,7 +7,7 @@ const passes = [
     name: 'Regular pass',
     price: 'Free',
     note: 'Experience the Fest. For students, farmers, innovators, professionals and everyone who wants to experience AgriTech Fest.',
-    benefits: ['3-day AgriTech Fest access', 'Main stage sessions', 'Keynotes and panel discussions', 'Exhibition access', 'Technology demonstrations', 'AgriTech Battlefield', 'General networking areas', 'Meet & Mingle access', 'Digital programme', 'Event credential', 'eCertificate of Attendance'],
+    benefits: ['Choose up to 2 AgriTech Fest days', 'Main stage sessions', 'Keynotes and panel discussions', 'Exhibition access', 'Technology demonstrations', 'AgriTech Battlefield', 'General networking areas', 'Meet & Mingle access', 'Digital programme', 'Event credential', 'eCertificate of Attendance'],
   },
   {
     name: 'Premium pass',
@@ -16,8 +16,10 @@ const passes = [
     benefits: ['Everything included in Regular', 'Fast-track registration', 'Premium wristband and credential', 'Priority seating', 'VIP/Premium Lounge access', 'Exclusive networking opportunities', 'Premium Meet & Mingle experience', 'Event merchandise pack', 'Premium refreshments', 'Reserved access to selected high-demand sessions', 'Curated founder and investor introductions', 'Exclusive Founders Mixer', 'Premium eCertificate and recognition'],
   },
 ];
+const festivalDays = [['2026-11-17', 'Day 1', 'Cultivate'], ['2026-11-18', 'Day 2', 'Engineer'], ['2026-11-19', 'Day 3', 'Scale']] as const;
 export default function TicketRegistration({ onComplete }: { onComplete: () => void }) {
   const [selected, setSelected] = useState('');
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const locked = useRef(false);
@@ -28,8 +30,9 @@ export default function TicketRegistration({ onComplete }: { onComplete: () => v
     const data = new FormData(event.currentTarget);
     const name = String(data.get('name') || '').trim();
     const email = String(data.get('email') || '').trim();
-    const attendanceDays = pass.name === 'Premium pass' ? data.getAll('days').map(String) : [String(data.get('day') || '')];
-    if (!attendanceDays.length || attendanceDays.some(day => !day)) { setError('Please select your attendance day.'); return; }
+    const attendanceDays = data.getAll('days').map(String);
+    if (!attendanceDays.length) { setError('Please select at least one attendance day.'); return; }
+    if (pass.name === 'Regular pass' && attendanceDays.length > 2) { setError('Regular Pass holders can select a maximum of two days.'); return; }
     if (!String(data.get('phone') || '').trim()) { setError('Please enter your phone number.'); return; }
     if (!name) { setError('Please enter your full name.'); return; }
     locked.current = true; setBusy(true); setError('');
@@ -63,17 +66,21 @@ export default function TicketRegistration({ onComplete }: { onComplete: () => v
     </fieldset>
     <fieldset disabled={busy}><legend>Your experience</legend>
       <label htmlFor="ticket-type">Ticket type *</label>
-      <select id="ticket-type" name="type" value={selected} required onChange={event => setSelected(event.target.value)} aria-controls="ticket-benefits"><option value="" disabled>Select your ticket type</option>{passes.map(item => <option key={item.name} value={item.name}>{item.name} — {item.price}</option>)}</select>
+      <select id="ticket-type" name="type" value={selected} required onChange={event => { setSelected(event.target.value); setSelectedDays([]); setError(''); }} aria-controls="ticket-benefits"><option value="" disabled>Select your ticket type</option>{passes.map(item => <option key={item.name} value={item.name}>{item.name} — {item.price}</option>)}</select>
       <div id="ticket-benefits" aria-live="polite" aria-atomic="true">{pass && <section className="atf-pass-benefits" aria-label={`${pass.name} benefits`}>
         <div className="atf-pass-heading"><div><span>YOUR SELECTED PASS</span><h3>{pass.name}</h3></div><strong>{pass.price}</strong></div><p>{pass.note}</p><h4>What’s included</h4>
         <ul>{pass.benefits.map(benefit => <li key={benefit}><Check size={17} aria-hidden="true" /><span>{benefit}</span></li>)}</ul>
         <small>{pass.name === 'Premium pass' ? 'Regular gets you into the room. Premium gets you closer to the people you came to meet.' : 'No payment is required for the Regular pass.'}</small>
       </section>}</div>
-            <label>{selected === 'Premium pass' ? 'Attendance days *' : 'Attendance day *'}</label>
-      {selected === 'Premium pass' ? <div className="attendance-day-options" role="group" aria-label="Choose one or more attendance days">
-        {[['2026-11-17', 'Day 1', 'Cultivate'], ['2026-11-18', 'Day 2', 'Engineer'], ['2026-11-19', 'Day 3', 'Scale']].map(([value, day, theme]) => <label className="attendance-day-option" key={value}><input type="checkbox" name="days" value={value} /><span><strong>{day}</strong><small>{theme}</small></span></label>)}
-        <small>Select any combination of festival days included with your Premium pass.</small>
-      </div> : <select id="attendance-day" name="day" defaultValue="" required><option value="" disabled>Select one festival day</option><option value="2026-11-17">Day 1 - Cultivate</option><option value="2026-11-18">Day 2 - Engineer</option><option value="2026-11-19">Day 3 - Scale</option></select>}
+      {pass && <><label>Attendance days * <small>({selectedDays.length} selected)</small></label>
+        <div className="attendance-day-options" role="group" aria-label={selected === 'Regular pass' ? 'Choose one or two attendance days' : 'Choose one or more attendance days'}>
+          {festivalDays.map(([value, day, theme]) => {
+            const checked = selectedDays.includes(value);
+            const atRegularLimit = selected === 'Regular pass' && selectedDays.length >= 2;
+            return <label className="attendance-day-option" key={value}><input type="checkbox" name="days" value={value} checked={checked} disabled={!checked && atRegularLimit} onChange={() => setSelectedDays(current => checked ? current.filter(item => item !== value) : [...current, value])} /><span><strong>{day}</strong><small>{theme}</small></span></label>;
+          })}
+          <small>{selected === 'Regular pass' ? 'Select one or two festival days. The free pass is limited to a maximum of two days.' : 'Select any combination of festival days included with your Premium pass.'}</small>
+        </div></>}
       <label htmlFor="ticket-interests">What are you looking forward to? *</label>
       <select id="ticket-interests" name="looking_forward_to" required defaultValue=""><option value="" disabled>Select your main interest</option>{['Learning from speakers and panels', 'Networking and meeting collaborators', 'Technology demonstrations and exhibitions', 'AgriTech Battlefield', 'Investment and business opportunities', 'Career and learning opportunities', 'All of the above', 'Other'].map(value => <option key={value}>{value}</option>)}</select>
       <label htmlFor="ticket-source">How did you hear about AgriTech Fest? *</label>
