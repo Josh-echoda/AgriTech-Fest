@@ -11,13 +11,13 @@ import './admin.css';
 import './admin-mobile.css';
 import './admin-desktop.css';
 import { supabase } from './lib/supabase';
-import { addAdminRecord, deleteAdminRecord, getAdminCounts, loadAdminSection, updateAdminRecordStatus, type AdminSectionKey, type AdminTable } from './lib/api';
+import { addAdminRecord, deleteAdminRecord, getAdminCounts, loadAdminSection, updateAdminRecord, updateAdminRecordStatus, type AdminSectionKey, type AdminTable } from './lib/api';
 import CheckInPanel from './admin/CheckInPanel';
 import TeamPanel from './admin/TeamPanel';
 import SiteMaintenanceControl from './components/SiteMaintenanceControl';
 
 type AdminSection = 'overview' | 'pages' | 'programme' | 'speakers' | 'exhibitors' | 'partners' | 'tickets' | 'checkin' | 'battlefield' | 'inbox' | 'newsletter' | 'team' | 'settings';
-type RecordRow = { id: string; title: string; subtitle: string; meta: string; status: 'Published' | 'Draft' | 'Pending' | 'Approved'; tag?: string };
+type RecordRow = { id: string; title: string; subtitle: string; meta: string; status: 'Published' | 'Draft' | 'Pending' | 'Approved'; tag?: string; editTitle?: string; editSubtitle?: string; editNotes?: string };
 
 const nav: { section: AdminSection; label: string; icon: typeof Gauge }[] = [
   { section: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -120,6 +120,7 @@ function AdminDashboard({ session, profile }: { session: Session; profile: Acces
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [modal, setModal] = useState(false);
+  const [editing, setEditing] = useState<RecordRow | null>(null);
   const [toast, setToast] = useState('');
 
   const isAdmin = profile.role === 'admin';
@@ -142,11 +143,15 @@ function AdminDashboard({ session, profile }: { session: Session; profile: Acces
     if (section === 'overview' || section === 'settings' || section === 'checkin' || section === 'team') return;
     const data = new FormData(event.currentTarget);
     try {
-      await addAdminRecord(section as AdminSectionKey, String(data.get('title')), String(data.get('subtitle')));
+      const title = String(data.get('title') || '').trim();
+      const subtitle = String(data.get('subtitle') || '').trim();
+      const notes = String(data.get('notes') || '').trim();
+      if (editing) await updateAdminRecord(section as AdminSectionKey, editing.id, title, subtitle, notes);
+      else await addAdminRecord(section as AdminSectionKey, title, subtitle);
       const fresh = await loadAdminSection(section as AdminSectionKey);
       setRows((current) => ({ ...current, [section]: fresh }));
-      setModal(false); setToast('Draft added successfully');
-    } catch (error) { setToast(`Could not add item: ${(error as Error).message}`); }
+      setModal(false); setEditing(null); setToast(editing ? 'Changes saved successfully' : 'Draft added successfully');
+    } catch (error) { setToast(`Could not save item: ${(error as Error).message}`); }
   };
   const remove = async (id: string) => {
     if (section === 'overview' || section === 'settings' || section === 'checkin' || section === 'team') return;
@@ -181,14 +186,14 @@ function AdminDashboard({ session, profile }: { session: Session; profile: Acces
         </header>
 
         <div className="admin-content">
-          <div className="admin-heading"><div><p>ADMIN CONSOLE / {section.toUpperCase()}</p><h1>{titles[section][0]}</h1><span>{titles[section][1]}</span></div>{!['overview','settings','checkin','team','tickets','battlefield','inbox','newsletter'].includes(section) && <button className="admin-primary" onClick={() => setModal(true)}><Plus size={17} /> Add new</button>}</div>
+          <div className="admin-heading"><div><p>ADMIN CONSOLE / {section.toUpperCase()}</p><h1>{titles[section][0]}</h1><span>{titles[section][1]}</span></div>{!['overview','settings','checkin','team','tickets','battlefield','inbox','newsletter'].includes(section) && <button className="admin-primary" onClick={() => { setEditing(null); setModal(true); }}><Plus size={17} /> Add new</button>}</div>
 
           {section === 'overview' && <Overview onNavigate={go} />}
           {(section === 'battlefield' || section === 'inbox' || section === 'newsletter' || section === 'tickets') && <Submissions key={section} section={section} query={query} />}
           {section === 'checkin' && <CheckInPanel />}
           {section === 'team' && <TeamPanel />}
           {section === 'settings' && <SettingsPanel notify={setToast} />}
-          {!['overview','settings','checkin','team','tickets','battlefield','inbox','newsletter'].includes(section) && <DataPanel section={section} rows={filtered} remove={remove} update={async (id, status) => { try { await updateAdminRecordStatus(section as AdminSectionKey, id, status); setRows((current) => ({ ...current, [section]: current[section as AdminSectionKey].map((row: RecordRow) => row.id === id ? { ...row, status } : row) })); setToast(`Status changed to ${status}`); } catch (error) { setToast(`Could not update status: ${(error as Error).message}`); } }} />}
+          {!['overview','settings','checkin','team','tickets','battlefield','inbox','newsletter'].includes(section) && <DataPanel section={section} rows={filtered} edit={(row) => { setEditing(row); setModal(true); }} remove={remove} update={async (id, status) => { try { await updateAdminRecordStatus(section as AdminSectionKey, id, status); setRows((current) => ({ ...current, [section]: current[section as AdminSectionKey].map((row: RecordRow) => row.id === id ? { ...row, status } : row) })); setToast(`Status changed to ${status}`); } catch (error) { setToast(`Could not update status: ${(error as Error).message}`); } }} />}
         </div>
       </main>
 
@@ -205,7 +210,7 @@ function AdminDashboard({ session, profile }: { session: Session; profile: Acces
           </button>
         ))}
       </nav>
-      {modal && <div className="admin-modal-backdrop" onMouseDown={() => setModal(false)}><form className="admin-modal" onSubmit={saveNew} onMouseDown={(e) => e.stopPropagation()}><div><span>NEW {section.toUpperCase()}</span><button type="button" onClick={() => setModal(false)}><X /></button></div><h2>Add to {titles[section][0]}</h2><label>Title<input name="title" required autoFocus placeholder="Enter a clear title" /></label><label>Details<input name="subtitle" required placeholder="Role, category or short description" /></label><label>Notes<textarea name="notes" rows={4} placeholder="Optional internal notes" /></label><footer><button type="button" onClick={() => setModal(false)}>Cancel</button><button className="admin-primary" type="submit">Save draft</button></footer></form></div>}
+      {modal && <div className="admin-modal-backdrop" onMouseDown={() => { setModal(false); setEditing(null); }}><form key={editing?.id || 'new'} className="admin-modal" onSubmit={saveNew} onMouseDown={(e) => e.stopPropagation()}><div><span>{editing ? 'EDIT' : 'NEW'} {section.toUpperCase()}</span><button type="button" onClick={() => { setModal(false); setEditing(null); }}><X /></button></div><h2>{editing ? `Edit ${titles[section][0]}` : `Add to ${titles[section][0]}`}</h2><label>Title<input name="title" required autoFocus defaultValue={editing?.editTitle || editing?.title || ''} placeholder="Enter a clear title" /></label><label>Details<input name="subtitle" required defaultValue={editing?.editSubtitle || editing?.subtitle || ''} placeholder="Role, category or short description" /></label><label>Notes<textarea name="notes" rows={4} defaultValue={editing?.editNotes || ''} placeholder="Optional description or notes" /></label><footer><button type="button" onClick={() => { setModal(false); setEditing(null); }}>Cancel</button><button className="admin-primary" type="submit">{editing ? 'Save changes' : 'Save draft'}</button></footer></form></div>}
       {toast && <div className="admin-toast"><Check size={17} />{toast}</div>}
     </div>
   );
@@ -227,8 +232,8 @@ function Overview({ onNavigate }: { onNavigate: (section: AdminSection) => void 
   return <section className="admin-stats" aria-label="Live database totals">{stats.map(([value, label, Icon, target]) => <button key={label} onClick={() => onNavigate(target)}><div><Icon size={20} /></div><strong>{value.toLocaleString()}</strong><span>{label}</span><small>Live Supabase total</small></button>)}</section>;
 }
 
-function DataPanel({ section, rows, remove, update }: { section: AdminSection; rows: RecordRow[]; remove: (id: string) => void | Promise<void>; update: (id: string, status: RecordRow['status']) => void | Promise<void> }) {
-  return <section className="admin-card admin-table"><header><div><span>{rows.length} RECORDS</span><h2>{titles[section][0]}</h2></div><button className="filter-button"><Gauge size={16} /> Filter</button></header>{rows.length === 0 ? <div className="admin-empty"><Search size={28} /><h3>No results found</h3><p>Try another search term.</p></div> : rows.map((row) => <article className="admin-row" key={row.id}><div className="row-avatar">{row.title.slice(0, 2).toUpperCase()}</div><div className="row-copy"><strong>{row.title}</strong><span>{row.subtitle}</span></div>{row.tag && <time>{row.tag}</time>}<small>{row.meta}</small><Status value={row.status} /><div className="row-actions"><button title="Edit" onClick={() => update(row.id, row.status === 'Published' || row.status === 'Approved' ? 'Draft' : section === 'pages' || section === 'programme' || section === 'speakers' || section === 'newsletter' ? 'Published' : 'Approved')}><Pencil size={16} /></button><button title="Delete" onClick={() => remove(row.id)}><Trash2 size={16} /></button></div></article>)}</section>;
+function DataPanel({ section, rows, edit, remove, update }: { section: AdminSection; rows: RecordRow[]; edit: (row: RecordRow) => void; remove: (id: string) => void | Promise<void>; update: (id: string, status: RecordRow['status']) => void | Promise<void> }) {
+  return <section className="admin-card admin-table"><header><div><span>{rows.length} RECORDS</span><h2>{titles[section][0]}</h2></div><button className="filter-button"><Gauge size={16} /> Filter</button></header>{rows.length === 0 ? <div className="admin-empty"><Search size={28} /><h3>No results found</h3><p>Try another search term.</p></div> : rows.map((row) => { const nextStatus = row.status === 'Published' || row.status === 'Approved' ? 'Draft' : section === 'pages' || section === 'programme' || section === 'speakers' || section === 'newsletter' ? 'Published' : 'Approved'; return <article className="admin-row" key={row.id}><div className="row-avatar">{row.title.slice(0, 2).toUpperCase()}</div><div className="row-copy"><strong>{row.title}</strong><span>{row.subtitle}</span></div>{row.tag && <time>{row.tag}</time>}<small>{row.meta}</small><Status value={row.status} /><div className="row-actions"><button title="Edit" aria-label={`Edit ${row.title}`} onClick={() => edit(row)}><Pencil size={16} /></button><button title={`Change status to ${nextStatus}`} aria-label={`Change ${row.title} status to ${nextStatus}`} onClick={() => update(row.id, nextStatus)}><Check size={16} /></button><button title="Delete" aria-label={`Delete ${row.title}`} onClick={() => remove(row.id)}><Trash2 size={16} /></button></div></article>; })}</section>;
 }
 
 function SettingsPanel({ notify }: { notify: (message: string) => void }) {

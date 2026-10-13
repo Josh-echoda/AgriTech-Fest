@@ -97,7 +97,7 @@ export async function getAdminCounts() {
 }
 
 export type AdminSectionKey = 'pages' | 'programme' | 'speakers' | 'exhibitors' | 'partners' | 'tickets' | 'battlefield' | 'inbox' | 'newsletter';
-export type AdminRecord = { id: string; title: string; subtitle: string; meta: string; status: 'Published' | 'Draft' | 'Pending' | 'Approved'; tag?: string };
+export type AdminRecord = { id: string; title: string; subtitle: string; meta: string; status: 'Published' | 'Draft' | 'Pending' | 'Approved'; tag?: string; editTitle?: string; editSubtitle?: string; editNotes?: string };
 
 const sectionTables: Record<AdminSectionKey, string> = {
   pages: 'pages', programme: 'programme_days', speakers: 'speakers', exhibitors: 'exhibitors', partners: 'partners', tickets: 'tickets', battlefield: 'battlefield_applications', inbox: 'enquiries', newsletter: 'newsletters',
@@ -112,11 +112,11 @@ function displayStatus(value?: string): AdminRecord['status'] {
 
 function mapAdminRow(section: AdminSectionKey, row: Record<string, unknown>): AdminRecord {
   const date = row.created_at ? new Date(String(row.created_at)).toLocaleDateString() : '';
-  if (section === 'pages') return { id: String(row.id), title: String(row.title), subtitle: String(row.eyebrow || row.slug), meta: `Updated ${date}`, status: displayStatus(String(row.status)) };
-  if (section === 'programme') return { id: String(row.id), title: `Day ${String(row.day_number).padStart(2, '0')} · ${row.title}`, subtitle: String(row.theme || ''), meta: String(row.venue || ''), status: displayStatus(String(row.status)), tag: String(row.event_date || '') };
-  if (section === 'speakers') return { id: String(row.id), title: String(row.name), subtitle: `${row.job_title || 'Speaker'} · ${row.organisation || ''}`, meta: String(row.category || ''), status: displayStatus(String(row.status)) };
-  if (section === 'exhibitors') return { id: String(row.id), title: String(row.name), subtitle: `${row.category || 'Exhibitor'} · Booth ${row.booth || 'TBC'}`, meta: String(row.description || ''), status: displayStatus(String(row.review_status)) };
-  if (section === 'partners') return { id: String(row.id), title: String(row.name), subtitle: String(row.tier || 'Partner'), meta: String(row.description || ''), status: displayStatus(String(row.status)) };
+  if (section === 'pages') return { id: String(row.id), title: String(row.title), subtitle: String(row.eyebrow || row.slug), meta: `Updated ${date}`, status: displayStatus(String(row.status)), editTitle: String(row.title), editSubtitle: String(row.eyebrow || ''), editNotes: String(row.seo_description || '') };
+  if (section === 'programme') return { id: String(row.id), title: `Day ${String(row.day_number).padStart(2, '0')} · ${row.title}`, subtitle: String(row.theme || ''), meta: String(row.venue || ''), status: displayStatus(String(row.status)), tag: String(row.event_date || ''), editTitle: String(row.title), editSubtitle: String(row.theme || ''), editNotes: String(row.venue || '') };
+  if (section === 'speakers') return { id: String(row.id), title: String(row.name), subtitle: `${row.job_title || 'Speaker'} · ${row.organisation || ''}`, meta: String(row.category || ''), status: displayStatus(String(row.status)), editTitle: String(row.name), editSubtitle: String(row.job_title || ''), editNotes: String(row.bio || '') };
+  if (section === 'exhibitors') return { id: String(row.id), title: String(row.name), subtitle: `${row.category || 'Exhibitor'} · Booth ${row.booth || 'TBC'}`, meta: String(row.description || ''), status: displayStatus(String(row.review_status)), editTitle: String(row.name), editSubtitle: String(row.category || ''), editNotes: String(row.description || '') };
+  if (section === 'partners') return { id: String(row.id), title: String(row.name), subtitle: String(row.tier || 'Partner'), meta: String(row.description || ''), status: displayStatus(String(row.status)), editTitle: String(row.name), editSubtitle: String(row.tier || ''), editNotes: String(row.description || '') };
   if (section === 'tickets') return { id: String(row.id), title: String(row.full_name), subtitle: `${row.ticket_type} · ${(Array.isArray(row.attendance_dates) ? row.attendance_dates : [row.attendance_date]).filter(Boolean).join(', ') || 'No day selected'} · ${row.ticket_code}`, meta: `${row.email} · ${date}`, status: displayStatus(String(row.status)) };
   if (section === 'battlefield') return { id: String(row.id), title: String(row.team_name), subtitle: `${row.category || 'Innovation'} · ${row.institution || ''}`, meta: String(row.solution || ''), status: displayStatus(String(row.review_status)) };
   if (section === 'inbox') return { id: String(row.id), title: String(row.subject || `${row.enquiry_type} enquiry`), subtitle: `From ${row.name}`, meta: date, status: displayStatus(String(row.status)) };
@@ -148,6 +148,20 @@ export async function addAdminRecord(section: AdminSectionKey, title: string, su
 
 export async function deleteAdminRecord(section: AdminSectionKey, id: string) {
   const { error } = await client().from(sectionTables[section]).delete().eq('id', id);
+  if (error) throw error;
+}
+
+export async function updateAdminRecord(section: AdminSectionKey, id: string, title: string, subtitle: string, notes: string) {
+  const payloads: Partial<Record<AdminSectionKey, Record<string, unknown>>> = {
+    pages: { title, eyebrow: subtitle, seo_description: notes || null },
+    programme: { title, theme: subtitle || null, venue: notes || null },
+    speakers: { name: title, job_title: subtitle || null, bio: notes || null },
+    exhibitors: { name: title, category: subtitle || null, description: notes || null },
+    partners: { name: title, tier: subtitle || 'Partner', description: notes || null },
+  };
+  const payload = payloads[section];
+  if (!payload) throw new Error('This section uses its own record editor.');
+  const { error } = await client().from(sectionTables[section]).update(payload).eq('id', id);
   if (error) throw error;
 }
 
