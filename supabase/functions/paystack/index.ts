@@ -41,6 +41,7 @@ Deno.serve(async request => {
       if (!site) return json({ error: 'Checkout return address has not been configured.' },503);
       const reference = `ATFP-${crypto.randomUUID()}`;
       const { data: ticket, error } = await db.from('tickets').insert({ ...attendee, attendance_date: attendanceDates[0], attendance_dates: attendanceDates, ticket_type: 'Premium pass', status: 'pending', payment_reference: reference, payment_status: 'pending', payment_amount: 5000000, payment_domain: 'live' }).select('id').single();
+      if (error?.code === '23505') return json({ error: 'This email address or phone number has already been used to register for a ticket.' },409);
       if (error) return json({ error: 'Unable to reserve your pass. Registration may be full; contact info@e360.africa.' },409);
       try {
         const result = await paystack('transaction/initialize', { email: attendee.email, amount: 5000000, currency: 'NGN', reference, callback_url: `${site.replace(/\/$/,'')}/tickets`, metadata: { ticket_id: ticket.id, attendance_days: attendanceDates } });

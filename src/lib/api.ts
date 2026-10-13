@@ -19,6 +19,7 @@ export async function createTicket(input: { full_name: string; email: string; ph
   input = { ...input, attendance_date: attendanceDays[0], attendance_dates: attendanceDays };
   const ticket_code = `ATF-${crypto.randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()}`;
   const { error } = await client().from('tickets').insert({ ...input, ticket_code });
+  if (error?.code === '23505') throw new Error('This email address or phone number has already been used to register for a ticket.');
   if (error) throw error;
   const email_sent = await sendConfirmation('ticket', ticket_code);
   return { ...input, ticket_code, email_sent };
