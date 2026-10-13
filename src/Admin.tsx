@@ -2,8 +2,8 @@ import Submissions from './admin/Submissions';
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import {
-  Bell, CalendarDays, Check, CircleDollarSign, Eye, FileText,
-  Gauge, Handshake, LayoutDashboard, Mail, Menu, MessageSquare, MoreHorizontal,
+  Bell, CalendarDays, Check, Eye, FileText,
+  Gauge, Handshake, LayoutDashboard, Mail, Menu, MessageSquare,
   Pencil, Plus, Search, Settings, Store, Ticket, Trash2, Trophy, UserRound,
   Users, X, ScanLine, ShieldCheck,
 } from 'lucide-react';
@@ -11,7 +11,7 @@ import './admin.css';
 import './admin-mobile.css';
 import './admin-desktop.css';
 import { supabase } from './lib/supabase';
-import { addAdminRecord, deleteAdminRecord, loadAdminSection, updateAdminRecordStatus, type AdminSectionKey } from './lib/api';
+import { addAdminRecord, deleteAdminRecord, getAdminCounts, loadAdminSection, updateAdminRecordStatus, type AdminSectionKey, type AdminTable } from './lib/api';
 import CheckInPanel from './admin/CheckInPanel';
 import TeamPanel from './admin/TeamPanel';
 import SiteMaintenanceControl from './components/SiteMaintenanceControl';
@@ -19,69 +19,24 @@ import SiteMaintenanceControl from './components/SiteMaintenanceControl';
 type AdminSection = 'overview' | 'pages' | 'programme' | 'speakers' | 'exhibitors' | 'partners' | 'tickets' | 'checkin' | 'battlefield' | 'inbox' | 'newsletter' | 'team' | 'settings';
 type RecordRow = { id: string; title: string; subtitle: string; meta: string; status: 'Published' | 'Draft' | 'Pending' | 'Approved'; tag?: string };
 
-const nav: { section: AdminSection; label: string; icon: typeof Gauge; badge?: number }[] = [
+const nav: { section: AdminSection; label: string; icon: typeof Gauge }[] = [
   { section: 'overview', label: 'Overview', icon: LayoutDashboard },
   { section: 'pages', label: 'Pages & content', icon: FileText },
   { section: 'programme', label: 'Programme', icon: CalendarDays },
   { section: 'speakers', label: 'Speakers', icon: UserRound },
   { section: 'exhibitors', label: 'Exhibitors', icon: Store },
   { section: 'partners', label: 'Partners', icon: Handshake },
-  { section: 'tickets', label: 'Tickets', icon: Ticket, badge: 18 },
+  { section: 'tickets', label: 'Tickets', icon: Ticket },
   { section: 'checkin', label: 'Registration desk', icon: ScanLine },
-  { section: 'battlefield', label: 'Battlefield', icon: Trophy, badge: 7 },
-  { section: 'inbox', label: 'Inbox', icon: MessageSquare, badge: 5 },
+  { section: 'battlefield', label: 'Battlefield', icon: Trophy },
+  { section: 'inbox', label: 'Inbox', icon: MessageSquare },
   { section: 'newsletter', label: 'Newsletter', icon: Mail },
   { section: 'team', label: 'Team & permissions', icon: ShieldCheck },
   { section: 'settings', label: 'Site settings', icon: Settings },
 ];
 
-const initialRows: Record<Exclude<AdminSection, 'overview' | 'settings' | 'checkin' | 'team'>, RecordRow[]> = {
-  pages: [
-    { id: 'p1', title: 'Home', subtitle: 'Main event landing page', meta: 'Updated 18 min ago', status: 'Published' },
-    { id: 'p2', title: 'About AgriTech Fest', subtitle: 'Event purpose and headline numbers', meta: 'Updated 2 days ago', status: 'Published' },
-    { id: 'p3', title: 'Get involved', subtitle: 'Routes for startups, partners and media', meta: 'Updated 4 days ago', status: 'Published' },
-    { id: 'p4', title: 'Privacy & terms', subtitle: 'Legal information', meta: 'Needs review', status: 'Draft' },
-  ],
-  programme: [
-    { id: 'd1', title: 'Day 01 · Cultivate', subtitle: 'Youth · Innovation · Education', meta: '10 sessions · Dambatta Campus', status: 'Published', tag: '17 Nov' },
-    { id: 'd2', title: 'Day 02 · Engineer', subtitle: 'Farmers · Research · Technology', meta: '10 sessions · BUK New Site', status: 'Published', tag: '18 Nov' },
-    { id: 'd3', title: 'Day 03 · Scale', subtitle: 'Policy · Investment · Partnership', meta: '11 sessions · Meena Event Center', status: 'Draft', tag: '19 Nov' },
-  ],
-  speakers: [
-    { id: 's1', title: 'Dr. Amina Bello', subtitle: 'Keynote · Federal Ministry of Agriculture', meta: 'Opening keynote', status: 'Published' },
-    { id: 's2', title: 'Musa Ibrahim', subtitle: 'Founder · FarmSense Africa', meta: 'Founder panel', status: 'Published' },
-    { id: 's3', title: 'Fatima Yusuf', subtitle: 'Investor · AgriVentures', meta: 'Investment panel', status: 'Published' },
-    { id: 's4', title: 'Prof. Tunde Adeyemi', subtitle: 'Research Lead · BUK', meta: 'Awaiting headshot', status: 'Draft' },
-  ],
-  exhibitors: [
-    { id: 'e1', title: 'AgroDrone Systems', subtitle: 'Technology · Booth A12', meta: 'Drone mapping and crop monitoring', status: 'Approved' },
-    { id: 'e2', title: 'FarmLink Equipment', subtitle: 'Equipment · Booth B04', meta: 'Smallholder machinery', status: 'Approved' },
-    { id: 'e3', title: 'HarvestPay', subtitle: 'Finance · Booth D02', meta: 'Credit, insurance and payments', status: 'Pending' },
-  ],
-  partners: [
-    { id: 'r1', title: 'Sterling Bank', subtitle: 'Headline Partner', meta: 'Primary placement', status: 'Published' },
-    { id: 'r2', title: 'MTN', subtitle: 'Official Partner', meta: 'Logo and profile live', status: 'Published' },
-    { id: 'r3', title: 'Kano State', subtitle: 'Supporting Partner', meta: 'Agreement in review', status: 'Pending' },
-  ],
-  tickets: [
-    { id: 't1', title: 'Aisha Mohammed', subtitle: 'Regular pass · ATF-1042', meta: 'aisha@example.com · 2 Sep 2026', status: 'Approved' },
-    { id: 't2', title: 'David Okoro', subtitle: 'Premium pass · ATF-2785', meta: 'david@example.com · 2 Sep 2026', status: 'Approved' },
-    { id: 't3', title: 'Zainab Musa', subtitle: 'Regular pass · ATF-3901', meta: 'zainab@example.com · 1 Sep 2026', status: 'Pending' },
-  ],
-  battlefield: [
-    { id: 'b1', title: 'GreenPulse', subtitle: 'Precision Agriculture · Bayero University', meta: 'Smart irrigation for smallholders', status: 'Pending' },
-    { id: 'b2', title: 'ColdBox Africa', subtitle: 'Post-Harvest · ABU Zaria', meta: 'Solar cold storage', status: 'Approved' },
-    { id: 'b3', title: 'HerdWatch', subtitle: 'Livestock · KUST', meta: 'Remote herd monitoring', status: 'Pending' },
-  ],
-  inbox: [
-    { id: 'i1', title: 'Sponsorship enquiry · NorthStar Foods', subtitle: 'From Halima Garba', meta: '12 minutes ago', status: 'Pending' },
-    { id: 'i2', title: 'Media accreditation · AgriNews Hub', subtitle: 'From Emmanuel Obi', meta: '2 hours ago', status: 'Pending' },
-    { id: 'i3', title: 'Accessibility request', subtitle: 'From Maryam Sani', meta: 'Yesterday', status: 'Approved' },
-  ],
-  newsletter: [
-    { id: 'n1', title: 'September programme update', subtitle: '2,148 recipients', meta: '63% opened · Sent 1 Sep', status: 'Published' },
-    { id: 'n2', title: 'Speaker announcement', subtitle: 'Audience: All subscribers', meta: 'Scheduled for 8 Sep', status: 'Draft' },
-  ],
+const emptyRows: Record<Exclude<AdminSection, 'overview' | 'settings' | 'checkin' | 'team'>, RecordRow[]> = {
+  pages: [], programme: [], speakers: [], exhibitors: [], partners: [], tickets: [], battlefield: [], inbox: [], newsletter: [],
 };
 
 const titles: Record<AdminSection, [string, string]> = {
@@ -101,7 +56,7 @@ const titles: Record<AdminSection, [string, string]> = {
 };
 
 function loadRows() {
-  try { return JSON.parse(localStorage.getItem('agritech-admin-rows') || '') as typeof initialRows; } catch { return initialRows; }
+  return emptyRows;
 }
 
 function Status({ value }: { value: RecordRow['status'] }) {
@@ -204,7 +159,7 @@ function AdminDashboard({ session, profile }: { session: Session; profile: Acces
       <aside className={`admin-sidebar ${menuOpen ? 'open' : ''}`}>
         <div className="admin-brand"><img src="/assets/images/LOGO_BRIGHT_.png" alt="AgriTech Fest" /><button onClick={() => setMenuOpen(false)}><X /></button></div>
         <div className="admin-event"><span>Current event</span><strong>AgriTech Fest 2026</strong><small>17–19 November · Kano</small></div>
-        <nav>{visibleNav.map(({ section: item, label, icon: Icon, badge }) => <button className={section === item ? 'active' : ''} key={item} onClick={() => go(item)}><Icon size={18} /><span>{label}</span>{badge && <b>{badge}</b>}</button>)}</nav>
+        <nav>{visibleNav.map(({ section: item, label, icon: Icon }) => <button className={section === item ? 'active' : ''} key={item} onClick={() => go(item)}><Icon size={18} /><span>{label}</span></button>)}</nav>
         <button className="admin-user" onClick={() => supabase?.auth.signOut()} title="Sign out"><div>{profile.display_name.slice(0,2).toUpperCase()}</div><span><strong>{profile.display_name}</strong><small>{session.user.email}</small></span></button>
       </aside>
 
@@ -257,22 +212,19 @@ function AdminDashboard({ session, profile }: { session: Session; profile: Acces
 }
 
 function Overview({ onNavigate }: { onNavigate: (section: AdminSection) => void }) {
-  const stats = [
-    ['2,148', 'Tickets issued', '+184 this week', Ticket, 'tickets'],
-    ['34', 'Speakers confirmed', '6 awaiting details', Users, 'speakers'],
-    ['27', 'Exhibitors approved', '9 spaces remaining', Store, 'exhibitors'],
-    ['42', 'Battlefield entries', '7 need review', Trophy, 'battlefield'],
-    ['5', 'New enquiries', 'Needs attention', MessageSquare, 'inbox'],
-    ['76%', 'Event readiness', 'Launch checklist', Gauge, 'programme'],
-  ] as const;
-  return <>
-    <p className="admin-preview-notice">Dashboard preview · Summary figures below are sample data. Open a section to manage live records.</p><section className="admin-stats">{stats.map(([value, label, note, Icon, target]) => <button className={label === 'New enquiries' || label === 'Event readiness' ? 'mobile-only-stat' : ''} key={label} onClick={() => onNavigate(target)}><div><Icon size={20} /></div><strong>{value}</strong><span>{label}</span><small>{note}</small></button>)}</section>
-    <section className="admin-overview-grid">
-      <article className="admin-card admin-sales"><header><div><span>REGISTRATION</span><h2>Ticket activity</h2></div><select aria-label="Chart range"><option>Last 7 days</option><option>Last 30 days</option></select></header><div className="chart-wrap"><div className="chart-y"><span>300</span><span>200</span><span>100</span><span>0</span></div><div className="bar-chart">{[38, 52, 47, 68, 58, 84, 73].map((height, i) => <div key={i}><i style={{ height: `${height}%` }} /><span>{['Thu','Fri','Sat','Sun','Mon','Tue','Wed'][i]}</span></div>)}</div></div></article>
-      <article className="admin-card admin-progress"><header><div><span>EVENT READINESS</span><h2>Launch checklist</h2></div><b>76%</b></header><div className="progress-track"><i /></div>{[['Programme published', true], ['Speaker profiles', true], ['Venue confirmation', false], ['Sponsor assets', true], ['Check-in team briefing', false]].map(([label, done]) => <div className="check-row" key={String(label)}><i className={done ? 'done' : ''}>{done && <Check size={12} />}</i><span>{label}</span></div>)}</article>
-    </section>
-    <section className="admin-overview-grid lower"><article className="admin-card"><header><div><span>NEEDS ATTENTION</span><h2>Pending reviews</h2></div><button onClick={() => onNavigate('inbox')}>View all</button></header>{[['7', 'Battlefield applications', 'battlefield'], ['5', 'New enquiries', 'inbox'], ['3', 'Exhibitor applications', 'exhibitors']].map(([n,label,target]) => <button className="attention-row" onClick={() => onNavigate(target as AdminSection)} key={label}><b>{n}</b><span>{label}</span><MoreHorizontal size={18} /></button>)}</article><article className="admin-card"><header><div><span>REVENUE SNAPSHOT</span><h2>Ticket value</h2></div><CircleDollarSign size={22} /></header><strong className="revenue">₦18.4m</strong><p>Across corporate and regular registrations</p><div className="revenue-split"><span><i />Corporate <b>₦12.8m</b></span><span><i />Regular <b>₦5.6m</b></span></div></article></section>
-  </>;
+  const [counts, setCounts] = useState<Record<AdminTable, number> | null>(null);
+  const [error, setError] = useState('');
+  useEffect(() => { getAdminCounts().then(setCounts).catch((failure) => setError(failure instanceof Error ? failure.message : 'Live totals could not be loaded.')); }, []);
+  const stats = counts ? [
+    [counts.tickets, 'Tickets', Ticket, 'tickets'],
+    [counts.speakers, 'Speakers', Users, 'speakers'],
+    [counts.exhibitors, 'Exhibitors', Store, 'exhibitors'],
+    [counts.battlefield_applications, 'Battlefield applications', Trophy, 'battlefield'],
+    [counts.enquiries, 'Enquiries', MessageSquare, 'inbox'],
+  ] as const : [];
+  if (error) return <section className="admin-card admin-empty"><h2>Live overview unavailable</h2><p>{error}</p></section>;
+  if (!counts) return <section className="admin-card admin-empty"><p role="status">Loading live records…</p></section>;
+  return <section className="admin-stats" aria-label="Live database totals">{stats.map(([value, label, Icon, target]) => <button key={label} onClick={() => onNavigate(target)}><div><Icon size={20} /></div><strong>{value.toLocaleString()}</strong><span>{label}</span><small>Live Supabase total</small></button>)}</section>;
 }
 
 function DataPanel({ section, rows, remove, update }: { section: AdminSection; rows: RecordRow[]; remove: (id: string) => void | Promise<void>; update: (id: string, status: RecordRow['status']) => void | Promise<void> }) {
@@ -280,7 +232,7 @@ function DataPanel({ section, rows, remove, update }: { section: AdminSection; r
 }
 
 function SettingsPanel({ notify }: { notify: (message: string) => void }) {
-  return <div className="settings-grid"><section className="admin-card settings-form"><header><div><span>EVENT INFORMATION</span><h2>Core details</h2></div></header><label>Event name<input defaultValue="AgriTech Fest 2026" /></label><div className="field-pair"><label>Start date<input type="date" defaultValue="2026-11-17" /></label><label>End date<input type="date" defaultValue="2026-11-19" /></label></div><label>Location<input defaultValue="Kano, Nigeria" /></label><label>Contact email<input type="email" defaultValue="info@e360.africa" /></label><button className="admin-primary" onClick={() => notify('Event settings saved')}>Save changes</button></section><section><SiteMaintenanceControl /><article className="admin-card settings-mini"><span>REGISTRATION CAPACITY</span><strong>2,148 <small>/ 3,000</small></strong><div className="progress-track"><i style={{ width: '71.6%' }} /></div><p>852 passes remaining</p></article></section></div>;
+  return <div className="settings-grid"><section className="admin-card settings-form"><header><div><span>EVENT INFORMATION</span><h2>Core details</h2></div></header><label>Event name<input defaultValue="AgriTech Fest 2026" /></label><div className="field-pair"><label>Start date<input type="date" defaultValue="2026-11-17" /></label><label>End date<input type="date" defaultValue="2026-11-19" /></label></div><label>Location<input defaultValue="Kano, Nigeria" /></label><label>Contact email<input type="email" defaultValue="info@e360.africa" /></label><button className="admin-primary" onClick={() => notify('Event settings saved')}>Save changes</button></section><section><SiteMaintenanceControl /></section></div>;
 }
 
 
