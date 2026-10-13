@@ -11,16 +11,28 @@ async function sendConfirmation(kind: 'ticket' | 'battlefield', code: string) {
   return !error && data?.sent === true;
 }
 
+function createFourDigitTicketCode() {
+  const random = new Uint16Array(1);
+  crypto.getRandomValues(random);
+  return `ATF-${String(random[0] % 10000).padStart(4, '0')}`;
+}
+
 export async function createTicket(input: { full_name: string; email: string; phone?: string; ticket_type: string; attendance_date: string; attendance_dates?: string[]; accessibility_notes?: string; role_designation?: string; looking_forward_to?: string; heard_about?: string }) {
   if (input.ticket_type !== 'Regular pass') throw new Error('Premium passes must use secure checkout.');
   const allowedDays = new Set(['2026-11-17', '2026-11-18', '2026-11-19']);
   const attendanceDays = [...new Set(input.attendance_dates || [input.attendance_date])].sort();
   if (attendanceDays.length < 1 || attendanceDays.length > 2 || attendanceDays.some(day => !allowedDays.has(day))) throw new Error('Select one or two valid festival days for the Regular Pass.');
   input = { ...input, attendance_date: attendanceDays[0], attendance_dates: attendanceDays };
-  const ticket_code = `ATF-${crypto.randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()}`;
-  const { error } = await client().from('tickets').insert({ ...input, ticket_code });
-  if (error?.code === '23505') throw new Error('This email address or phone number has already been used to register for a ticket.');
-  if (error) throw error;
+  let ticket_code = '';
+  for (let attempt = 0; attempt < 16; attempt += 1) {
+    ticket_code = createFourDigitTicketCode();
+    const { error } = await client().from('tickets').insert({ ...input, ticket_code });
+    if (!error) break;
+    if (error.code === '23505' && error.message.toLowerCase().includes('already been used')) throw new Error('This email address or phone number has already been used to register for a ticket.');
+    if (error.code === '23505') { ticket_code = ''; continue; }
+    throw error;
+  }
+  if (!ticket_code) throw new Error('Unable to issue a ticket code. Please try again.');
   const email_sent = await sendConfirmation('ticket', ticket_code);
   return { ...input, ticket_code, email_sent };
 }
@@ -125,7 +137,7 @@ export async function addAdminRecord(section: AdminSectionKey, title: string, su
     speakers: { name: title, job_title: subtitle, status: 'draft' },
     exhibitors: { name: title, category: subtitle, review_status: 'pending', is_public: false },
     partners: { name: title, tier: subtitle || 'Partner', status: 'draft' },
-    tickets: { full_name: title, email: subtitle, ticket_type: 'Regular pass', attendance_date: '2026-11-17', attendance_dates: ['2026-11-17'], ticket_code: `ATF-${key.toUpperCase()}`, status: 'pending' },
+    tickets: { full_name: title, email: subtitle, ticket_type: 'Regular pass', attendance_date: '2026-11-17', attendance_dates: ['2026-11-17'], status: 'pending' },
     battlefield: { team_name: title, email: subtitle, review_status: 'pending' },
     inbox: { enquiry_type: 'contact', name: title, email: subtitle, status: 'pending' },
     newsletter: { subject: title, preview_text: subtitle, status: 'draft' },

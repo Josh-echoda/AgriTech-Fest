@@ -64,9 +64,9 @@ const initialRows: Record<Exclude<AdminSection, 'overview' | 'settings' | 'check
     { id: 'r3', title: 'Kano State', subtitle: 'Supporting Partner', meta: 'Agreement in review', status: 'Pending' },
   ],
   tickets: [
-    { id: 't1', title: 'Aisha Mohammed', subtitle: 'Regular pass · ATF-Q2-18KLA', meta: 'aisha@example.com · 2 Sep 2026', status: 'Approved' },
-    { id: 't2', title: 'David Okoro', subtitle: 'Premium pass · ATF-Y7-92MPD', meta: 'david@example.com · 2 Sep 2026', status: 'Approved' },
-    { id: 't3', title: 'Zainab Musa', subtitle: 'Regular pass · ATF-L4-5AQNX', meta: 'zainab@example.com · 1 Sep 2026', status: 'Pending' },
+    { id: 't1', title: 'Aisha Mohammed', subtitle: 'Regular pass · ATF-1042', meta: 'aisha@example.com · 2 Sep 2026', status: 'Approved' },
+    { id: 't2', title: 'David Okoro', subtitle: 'Premium pass · ATF-2785', meta: 'david@example.com · 2 Sep 2026', status: 'Approved' },
+    { id: 't3', title: 'Zainab Musa', subtitle: 'Regular pass · ATF-3901', meta: 'zainab@example.com · 1 Sep 2026', status: 'Pending' },
   ],
   battlefield: [
     { id: 'b1', title: 'GreenPulse', subtitle: 'Precision Agriculture · Bayero University', meta: 'Smart irrigation for smallholders', status: 'Pending' },

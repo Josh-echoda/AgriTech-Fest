@@ -9,7 +9,7 @@ const compiled = ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTar
 const reference = 'ATFP-12345678-1234-1234-1234-123456789abc';
 async function call(body, overrides = {}, signature) {
   let handler; const writes = []; const calls = [];
-  const ticket = { id:'ticket-id', ticket_code:'ATF-1234567890', email:'test@example.com', payment_reference:reference, payment_status:'pending', payment_amount:5000000, status:'pending', ...overrides.ticket };
+  const ticket = { id:'ticket-id', ticket_code:'ATF-1234', email:'test@example.com', payment_reference:reference, payment_status:'pending', payment_amount:5000000, status:'pending', ...overrides.ticket };
   const transaction = { status:'success',amount:5000000,currency:'NGN',domain:'live',reference,customer:{email:ticket.email},...overrides.transaction };
   const db = { from() { const chain = { insert(row){writes.push(row);return chain}, update(row){writes.push(row);Object.assign(ticket,row);return chain}, select(){return chain}, eq(){return chain}, single:async()=>({data:ticket,error:null}), then(resolve){return Promise.resolve({error:null}).then(resolve)} }; return chain; } };
   const fetchMock = async (url,options) => { calls.push({url,options}); return Response.json({status:true,data:url.includes('initialize') ? {authorization_url:'https://checkout.paystack.com/test',reference} : transaction}); };
